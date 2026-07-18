@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Rack — your closet, styled</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Rack">
+<meta name="theme-color" content="#F6EFEC">
+<link id="touch-icon" rel="apple-touch-icon" href="">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root{
+  --canvas:#F6EFEC;
+  --ink:#2B2226;
+  --card:#FDFAF8;
+  --rose:#B4637A;
+  --rose-dark:#93465C;
+  --mauve:#8B5F6D;
+  --gold:#B98A4E;
+  --line:#E7D9D4;
+  --warn:#B5533C;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--canvas);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+#app{
+  max-width:480px;
+  margin:0 auto;
+  height:100vh;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  background:var(--canvas);
+  position:relative;
+  border-left:1px solid var(--line);
+  border-right:1px solid var(--line);
+}
+header{
+  padding:calc(14px + env(safe-area-inset-top)) 20px 14px;
+  border-bottom:1px solid var(--line);
+  flex-shrink:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+}
+.brand{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:26px;
+  letter-spacing:-0.01em;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.brand .tag-dot{
+  width:9px;height:9px;border-radius:50%;background:var(--rose);
+  display:inline-block;
+}
+.subhead{
+  font-size:12.5px;
+  color:#8a7076;
+  margin-top:2px;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:0.01em;
+}
+.save-pill{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  font-weight:600;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:#9a8388;
+  white-space:nowrap;
+}
+.save-pill.ok{color:var(--rose-dark);border-color:#e3c6ce;}
+.save-pill.err{color:var(--warn);border-color:#e0c3ad;}
+
+main{
+  flex:1;
+  overflow-y:auto;
+  padding:16px 16px 96px;
+  -webkit-overflow-scrolling:touch;
+}
+.view{display:none;}
+.view.active{display:block;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.closet-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.item-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+}
+.item-card img{
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+  display:block;
+  background:#efe3de;
+}
+.item-tag{
+  position:absolute;
+  top:8px;
+  right:-6px;
+  background:var(--rose);
+  color:#fff;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  font-weight:600;
+  letter-spacing:0.04em;
+  padding:3px 10px 3px 8px;
+  border-radius:3px 0 0 3px;
+  text-transform:uppercase;
+  box-shadow:-2px 2px 0 rgba(0,0,0,0.08);
+}
+.item-tag.modest{background:var(--mauve);}
+.item-meta{padding:8px 10px 10px;}
+.item-name{font-size:13.5px;font-weight:600;}
+.item-desc{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:12px;
+  line-height:1.4;
+  color:#6d585e;
+  margin-top:3px;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+textarea.text-input{resize:none;font-family:'Inter';}
+.item-sub{font-size:11px;color:#8a7076;font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+
+.add-tile{
+  border:1.5px dashed #d3b3ac;
+  border-radius:var(--radius);
+  aspect-ratio:3/4;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  color:#8a7076;
+  cursor:pointer;
+  background:transparent;
+}
+.add-tile:active{background:#f0e2dd;}
+.add-tile svg{width:26px;height:26px;stroke:var(--rose-dark);}
+.add-tile span{font-size:12px;font-weight:600;}
+
+.empty-state{
+  text-align:center;
+  padding:50px 20px;
+  color:#8a7076;
+  font-size:14px;
+  line-height:1.55;
+}
+.empty-state .glyph{font-family:'Fraunces',serif;font-size:40px;color:var(--rose);margin-bottom:6px;}
+
+.section-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:#a0868c;
+  margin:20px 0 10px;
+}
+.section-label:first-child{margin-top:0;}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:8px 14px;
+  border-radius:999px;
+  border:1.5px solid var(--line);
+  background:var(--card);
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s ease;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.chip.active{
+  background:var(--ink);
+  border-color:var(--ink);
+  color:var(--canvas);
+}
+.chip.num{min-width:46px;text-align:center;}
+.toggle-row{
+  display:flex;
+  border:1.5px solid var(--line);
+  border-radius:999px;
+  overflow:hidden;
+  width:fit-content;
+}
+.toggle-opt{
+  padding:8px 16px;
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+  background:var(--card);
+}
+.toggle-opt.active{background:var(--mauve);color:#fff;}
+
+.btn-primary{
+  width:100%;
+  padding:15px;
+  background:var(--ink);
+  color:var(--canvas);
+  border:none;
+  border-radius:12px;
+  font-family:'Inter',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:22px;
+  letter-spacing:0.01em;
+}
+.btn-primary:active{background:var(--rose-dark);}
+.btn-primary:disabled{background:#b8a3a8;}
+.btn-secondary{
+  width:100%;
+  padding:13px;
+  background:transparent;
+  color:var(--ink);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.outfit-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  margin-top:16px;
+  padding:16px 16px 18px;
+}
+.outfit-num{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--rose-dark);
+  font-weight:600;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.stretch-note{
+  font-size:9.5px;
+  color:#a2732b;
+  background:#f6ead3;
+  border:1px solid #e8d3a8;
+  padding:2px 8px;
+  border-radius:999px;
+  text-transform:none;
+  letter-spacing:0;
+}
+.outfit-photos{
+  display:flex;
+  gap:8px;
+  margin:10px 0 12px;
+  overflow-x:auto;
+}
+.outfit-photos img{
+  width:78px;
+  height:104px;
+  object-fit:cover;
+  border-radius:8px;
+  border:1px solid var(--line);
+  flex-shrink:0;
+}
+.outfit-caption{
+  font-family:'Fraunces',serif;
+  font-size:16.5px;
+  line-height:1.45;
+  font-style:italic;
+  min-height:24px;
+}
+.outfit-items{
+  margin-top:10px;
+  font-size:12.5px;
+  color:#8a7076;
+  font-family:'IBM Plex Mono',monospace;
+  line-height:1.7;
+}
+.wear-btn{
+  margin-top:14px;
+  padding:10px 16px;
+  background:var(--rose);
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+}
+.wear-btn:disabled{background:#c9b0b6;}
+
+.missing-box{
+  margin-top:18px;
+  background:#f7e8e0;
+  border:1px solid #e6c8b8;
+  border-radius:12px;
+  padding:14px 16px;
+}
+.missing-box .h{font-weight:700;font-size:13.5px;color:var(--warn);margin-bottom:4px;}
+.missing-box ul{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.6;}
+
+.hist-entry{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:10px;
+  background:var(--card);
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.hist-thumbs{display:flex;}
+.hist-thumbs img{
+  width:34px;height:34px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--card);
+  margin-left:-10px;
+}
+.hist-thumbs img:first-child{margin-left:0;}
+.hist-meta{flex:1;}
+.hist-date{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#a0868c;}
+.hist-occ{font-weight:600;font-size:13.5px;text-transform:capitalize;}
+
+nav{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  background:var(--card);
+  border-top:1px solid var(--line);
+  display:flex;
+  padding:8px 6px calc(10px + env(safe-area-inset-bottom));
+}
+.nav-btn{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  padding:6px 0;
+  color:#b39aa0;
+  cursor:pointer;
+  font-size:10.5px;
+  font-weight:600;
+  font-family:'IBM Plex Mono',monospace;
+  background:none;border:none;
+}
+.nav-btn svg{width:21px;height:21px;stroke:#b39aa0;fill:none;stroke-width:1.8;}
+.nav-btn.active{color:var(--ink);}
+.nav-btn.active svg{stroke:var(--ink);}
+
+.overlay{
+  position:absolute;inset:0;
+  background:rgba(43,34,38,0.55);
+  display:none;
+  align-items:flex-end;
+  z-index:50;
+}
+.overlay.show{display:flex;}
+.sheet{
+  background:var(--canvas);
+  width:100%;
+  border-radius:20px 20px 0 0;
+  padding:20px 20px calc(24px + env(safe-area-inset-bottom));
+  max-height:88vh;
+  overflow-y:auto;
+}
+.sheet h3{font-family:'Fraunces',serif;font-size:20px;margin:0 0 14px;}
+.field-label{font-size:12px;font-weight:600;color:#8a7076;margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.05em;}
+.text-input{
+  width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;
+  font-family:'Inter';font-size:16px;background:var(--card);
+}
+.preview-wrap{position:relative;}
+.preview-img{width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:6px;display:block;}
+.ai-badge{
+  position:absolute;top:10px;left:10px;
+  background:rgba(43,34,38,0.82);color:#fff;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+  padding:5px 10px;border-radius:999px;letter-spacing:0.04em;
+  display:flex;align-items:center;gap:6px;
+}
+.ai-badge .pulse{
+  width:7px;height:7px;border-radius:50%;background:var(--rose);
+  animation:pulse 1s infinite alternate;
+}
+@keyframes pulse{from{opacity:0.35;}to{opacity:1;}}
+
+.share-box{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px;
+}
+.share-id{
+  font-family:'IBM Plex Mono',monospace;font-size:15px;background:var(--canvas);
+  border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;word-break:break-all;
+  letter-spacing:0.08em;
+}
+.toast{
+  position:absolute;bottom:86px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:var(--canvas);padding:10px 18px;border-radius:999px;
+  font-size:13px;font-weight:600;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;
+  white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;
+}
+.toast.show{opacity:1;}
+.spinner-caption{
+  color:#a0868c;font-size:13px;font-family:'IBM Plex Mono',monospace;font-style:normal;
+}
+.install-banner{
+  background:linear-gradient(135deg,#f3dfe4,#f6ede6);
+  border:1px solid #e3c6ce;
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:14px;
+  font-size:13px;
+  line-height:1.55;
+}
+.install-banner b{font-weight:700;}
+.install-banner .dismiss{
+  float:right;font-size:16px;color:#a0868c;cursor:pointer;padding:0 2px;margin-left:8px;
+}
+
+/* ---------- Arabic / RTL ---------- */
+html[lang="ar"] body,
+html[lang="ar"] .chip,
+html[lang="ar"] .btn-primary,
+html[lang="ar"] .btn-secondary,
+html[lang="ar"] .text-input,
+html[lang="ar"] .toggle-opt,
+html[lang="ar"] .item-name,
+html[lang="ar"] .hist-occ{font-family:'IBM Plex Sans Arabic','Inter',sans-serif;}
+html[lang="ar"] .outfit-caption,
+html[lang="ar"] .item-desc{font-family:'Amiri',serif;font-style:normal;}
+html[lang="ar"] .sheet h3{font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:700;}
+html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
+[dir="rtl"] .item-tag{right:auto;left:-6px;border-radius:0 3px 3px 0;box-shadow:2px 2px 0 rgba(0,0,0,0.08);}
+[dir="rtl"] .hist-thumbs img{margin-left:0;margin-right:-10px;}
+[dir="rtl"] .hist-thumbs img:first-child{margin-right:0;}
+[dir="rtl"] .install-banner .dismiss{float:left;margin-left:0;margin-right:8px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div>
+      <div class="brand"><span class="tag-dot"></span>Rack</div>
+      <div class="subhead" data-i18n="tagline">your closet, styled ♡</div>
+    </div>
+    <div class="save-pill" id="save-pill">loading…</div>
+  </header>
+
+  <main>
+
+    <!-- CLOSET VIEW -->
+    <section class="view active" id="view-closet">
+      <div class="install-banner" id="install-banner" style="display:none;">
+        <span class="dismiss" id="install-dismiss">✕</span>
+        <b data-i18n="install_lead">Make Rack a real app:</b> <span id="install-text"></span>
+      </div>
+      <div class="closet-grid" id="closet-grid"></div>
+    </section>
+
+    <!-- GENERATE VIEW -->
+    <section class="view" id="view-generate">
+      <div class="section-label" data-i18n="occ_label">Occasion</div>
+      <div class="chip-row" id="occasion-chips"></div>
+
+      <div class="section-label" data-i18n="weather_label">Season / weather</div>
+      <div class="chip-row" id="weather-chips"></div>
+
+      <div class="section-label" data-i18n="coverage_label">Coverage</div>
+      <div class="toggle-row" id="modest-toggle">
+        <div class="toggle-opt active" data-val="no" data-i18n="any">Any</div>
+        <div class="toggle-opt" data-val="yes" data-i18n="modest">Modest</div>
+      </div>
+
+      <div class="section-label" data-i18n="count_label">How many looks</div>
+      <div class="chip-row" id="count-chips"></div>
+
+      <button class="btn-primary" id="btn-generate">Style me 3 looks</button>
+
+      <div id="outfit-results"></div>
+    </section>
+
+    <!-- HISTORY VIEW -->
+    <section class="view" id="view-history">
+      <div class="section-label" data-i18n="hist_label">Last 14 days</div>
+      <div id="history-list"></div>
+    </section>
+
+    <!-- CLOSETS / SETTINGS VIEW -->
+    <section class="view" id="view-share">
+      <div class="section-label" data-i18n="cur_closet_label">Current closet</div>
+      <div class="share-box">
+        <div style="font-size:13.5px;line-height:1.5;" data-i18n="share_desc">Your closet code.</div>
+        <div class="share-id" id="closet-code-display"></div>
+      </div>
+
+      <div class="section-label" data-i18n="lang_label">Language / \u0627\u0644\u0644\u063a\u0629</div>
+      <div class="share-box"><div class="chip-row"><div class="chip" id="lang-sw-en">English \u00b7 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629</div><div class="chip" id="lang-sw-ar">\u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u00b7 Arabic</div></div></div>
+
+      <div class="section-label" data-i18n="your_closets_label">Your closets</div>
+      <div id="closet-list"></div>
+      <button class="btn-secondary" id="btn-new-closet" data-i18n="new_closet_btn">＋ Start a new empty closet</button>
+
+      <div class="section-label" data-i18n="ai_label">AI auto-tagging</div>
+      <div class="share-box">
+        <div style="font-size:13px;line-height:1.55;color:#6d585e;" data-i18n="api_desc">API key info.</div>
+        <div class="field-label" data-i18n="api_key_l">API key</div>
+        <input class="text-input" id="f-apikey" placeholder="sk-ant-…" autocomplete="off">
+        <button class="btn-secondary" id="btn-save-key" data-i18n="save_key">Save key</button>
+      </div>
+    </section>
+
+  </main>
+
+  <nav>
+    <button class="nav-btn active" data-view="closet">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg><span data-i18n="nav_closet">Closet</span>
+    </button>
+    <button class="nav-btn" data-view="generate">
+      <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9L9.5 8z"/></svg><span data-i18n="nav_style">Style</span>
+    </button>
+    <button class="nav-btn" data-view="history">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span data-i18n="nav_history">History</span>
+    </button>
+    <button class="nav-btn" data-view="share">
+      <svg viewBox="0 0 24 24"><path d="M5 8h14M5 8l1.5 12h11L19 8M9 8V5a3 3 0 016 0v3"/></svg><span data-i18n="nav_closets">Closets</span>
+    </button>
+  </nav>
+
+  <input type="file" id="file-camera" accept="image/*" capture="environment" style="display:none">
+  <input type="file" id="file-library" accept="image/*" style="display:none">
+
+  <!-- SOURCE PICKER SHEET -->
+  <div class="overlay" id="source-overlay">
+    <div class="sheet">
+      <h3 data-i18n="add_piece">Add a piece</h3>
+      <button class="btn-primary" id="btn-src-camera" style="margin-top:4px;" data-i18n="take_photo">📷 &nbsp;Take a photo</button>
+      <button class="btn-secondary" id="btn-src-library" data-i18n="choose_lib">🖼 &nbsp;Choose from library</button>
+    </div>
+  </div>
+
+  <!-- ADD/TAG ITEM SHEET -->
+  <div class="overlay" id="tag-overlay">
+    <div class="sheet">
+      <h3 id="tag-sheet-title">New piece</h3>
+      <div class="preview-wrap">
+        <img id="tag-preview" class="preview-img" src="">
+        <div class="ai-badge" id="ai-badge" style="display:none;"><span class="pulse"></span><span id="ai-badge-text">AI is looking…</span></div>
+      </div>
+      <div class="field-label" data-i18n="name_l">Name</div>
+      <input class="text-input" id="f-name" data-i18n-ph="ph_name" placeholder="e.g. Blush satin blouse">
+      <div class="field-label" data-i18n="desc_l">Description</div>
+      <textarea class="text-input" id="f-desc" rows="2" data-i18n-ph="ph_desc" placeholder="A little Pinterest-style caption"></textarea>
+      <div class="field-label" data-i18n="cat_l">Category</div>
+      <div class="chip-row" id="f-category"></div>
+      <div class="field-label" data-i18n="color_l">Color</div>
+      <input class="text-input" id="f-color" data-i18n-ph="ph_color" placeholder="e.g. ivory, black">
+      <div class="field-label" data-i18n="form_l">Formality</div>
+      <div class="chip-row" id="f-formality"></div>
+      <div class="field-label" data-i18n="warm_l">Warmth</div>
+      <div class="chip-row" id="f-warmth"></div>
+      <div class="field-label" data-i18n="cover_l">Coverage</div>
+      <div class="toggle-row" id="f-modest">
+        <div class="toggle-opt active" data-val="no" data-i18n="standard">Standard</div>
+        <div class="toggle-opt" data-val="yes" data-i18n="modest">Modest</div>
+      </div>
+      <button class="btn-primary" id="btn-save-item" data-i18n="save_item">Save to closet</button>
+      <button class="btn-secondary" id="btn-delete-item" style="display:none;color:#B5533C;border-color:#e6c8b8;" data-i18n="delete_item">Remove from closet</button>
+    </div>
+  </div>
+
+  <!-- AUTH SCREEN -->
+  <div class="overlay" id="auth-overlay" style="align-items:center;justify-content:center;z-index:210;">
+    <div class="sheet" style="border-radius:20px;max-width:340px;margin:0 20px;padding-bottom:24px;">
+      <div class="brand" style="justify-content:center;margin-bottom:4px;"><span class="tag-dot"></span>Rack</div>
+      <div style="text-align:center;font-size:13px;color:#8a7076;margin-bottom:16px;" id="auth-sub" data-i18n="auth_sub">Sign in to your closet</div>
+      <input class="text-input" id="auth-email" type="email" autocomplete="email" placeholder="email" style="margin-bottom:10px;">
+      <input class="text-input" id="auth-pass" type="password" autocomplete="current-password" placeholder="password">
+      <div id="auth-err" style="color:#B5533C;font-size:12.5px;margin-top:8px;display:none;"></div>
+      <button class="btn-primary" id="auth-go" data-i18n="auth_login">Log in</button>
+      <button class="btn-secondary" id="auth-toggle" data-i18n="auth_toswitch_signup">New here? Create an account</button>
+    </div>
+  </div>
+
+  <!-- LANGUAGE PICKER -->
+  <div class="overlay" id="lang-overlay" style="align-items:center;justify-content:center;z-index:200;">
+    <div class="sheet" style="border-radius:20px;max-width:320px;margin:0 20px;padding-bottom:24px;">
+      <h3 style="text-align:center;">\u0627\u062e\u062a\u0627\u0631\u064a \u0644\u063a\u062a\u0643<br><span style="font-family:'Inter';font-size:14px;font-weight:500;">Choose your language</span></h3>
+      <button class="btn-primary" id="lang-pick-ar" style="margin-top:4px;">\u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u00b7 Arabic</button>
+      <button class="btn-secondary" id="lang-pick-en">English \u00b7 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+// ================= i18n =================
+var LANG = "en";
+var IS_IOS = false;
+var I18N = {
+en: {
+  tagline: "your closet, styled \u2661",
+  closet_word: "CLOSET",
+  occ_label: "Occasion", weather_label: "Season / weather", coverage_label: "Coverage", count_label: "How many looks",
+  hist_label: "Last 14 days", cur_closet_label: "Your account", your_closets_label: "Account", ai_label: "AI auto-tagging",
+  any: "Any", modest: "Modest", standard: "Standard",
+  name_l: "Name", desc_l: "Description", cat_l: "Category", color_l: "Color",
+  form_l: "Formality \u2014 pick all that apply", warm_l: "Warmth", cover_l: "Coverage",
+  ph_name: "e.g. Blush satin blouse", ph_desc: "A little Pinterest-style caption \u2014 AI writes this for you", ph_color: "e.g. blush, ivory, black",
+  new_piece: "New piece", edit_piece: "Edit piece", add_piece: "Add a piece", add_tile: "Add a piece",
+  take_photo: "\ud83d\udcf7 &nbsp;Take a photo", choose_lib: "\ud83d\uddbc &nbsp;Choose from library",
+  save_item: "Save to closet", saving_btn: "Saving\u2026", delete_item: "Remove from closet",
+  nav_closet: "Closet", nav_style: "Style", nav_history: "History", nav_closets: "Closets",
+  new_closet_btn: "\uff0b Start a new empty closet",
+  share_desc: "Your closet lives in the cloud and syncs to any device you sign in on. It is private to your account \u2014 nobody else can see it.",
+  api_desc: "Outside the Claude app, AI tagging and captions need your own Anthropic API key (from console.anthropic.com). Paste it below \u2014 it stays on your device. Without it, everything still works; you just tag pieces yourself.",
+  api_key_l: "API key", save_key: "Save key",
+  style_one: "Style me 1 look", style_many: "Style me {n} looks",
+  look_of: "Look {i} of {n}", closest: "closest match", wear: "Wear this", logged: "Logged \u2713",
+  writing: "Writing your caption\u2026", styling: "Styling\u2026",
+  missing_h: "Worth adding to your closet", or: "or",
+  miss_top: "a {f} top for {w}", miss_bottom: "{f} bottoms for {w}", miss_shoes: "{f} shoes for {s}",
+  miss_outer: "a warm outer layer for {w}", miss_modest: "more modest high-coverage pieces", miss_hijab: "a hijab to crown your modest looks",
+  empty_closet: "Snap or upload your first piece<br>to start building your closet.",
+  empty_hist: "Nothing worn yet. Outfits you log stay here for two weeks so Rack never repeats them.",
+  empty_gen: "Not enough usable pieces for this combination yet \u2014 add a top, bottoms and shoes (or a dress and shoes) and try again.",
+  loading: "loading\u2026", saving: "saving\u2026", saved_pill: "{n} pieces \u2713 saved", failed_pill: "save failed!",
+  toast_saved: "Saved to closet", toast_removed: "Removed", toast_hist: "Saved to your 14-day history",
+  toast_new_closet: "New closet {id} ready", toast_opened: "Opened closet {id}",
+  toast_savefail: "Save failed \u2014 free up device storage and try again", toast_photo: "Could not read that photo",
+  ai_looking: "AI is looking\u2026", ai_tagged: "AI tagged \u2713 review below", ai_unavail: "AI unavailable \u2014 tag manually",
+  ai_needkey: "Add AI key in Closets tab, or tag manually",
+  active_now: "Active now", tap_open: "Tap to open",
+  lang_label: "Language / \u0627\u0644\u0644\u063a\u0629",
+  auth_sub: "Sign in to your closet", auth_login: "Log in", auth_signup: "Create account",
+  auth_toswitch_signup: "New here? Create an account", auth_toswitch_login: "Have an account? Log in",
+  auth_bad: "Wrong email or password", auth_exists: "That email is already registered \u2014 try logging in",
+  auth_weak: "Password must be at least 6 characters", auth_generic: "Something went wrong \u2014 try again",
+  auth_needfields: "Enter your email and password", logout: "Log out", signed_as: "Signed in as {email}",
+  toast_key_saved: "AI key saved on this device", toast_key_removed: "AI key removed",
+  install_lead: "Make Rack a real app:",
+  install_ios: "tap the Share button in Safari, then \u201cAdd to Home Screen\u201d. Rack gets its own icon and opens full-screen like any app.",
+  install_android: "open the browser menu (\u22ee) and tap \u201cAdd to Home screen\u201d or \u201cInstall app\u201d. Rack gets its own icon and opens full-screen.",
+  install_prompt: "<u>tap here to install Rack</u> \u2014 it gets its own icon and opens full-screen."
+},
+ar: {
+  tagline: "\u062e\u0632\u0627\u0646\u062a\u0643\u060c \u0628\u0633\u062a\u0627\u064a\u0644\u0643 \u2661",
+  closet_word: "\u0627\u0644\u062e\u0632\u0627\u0646\u0629",
+  occ_label: "\u0627\u0644\u0645\u0646\u0627\u0633\u0628\u0629", weather_label: "\u0627\u0644\u0641\u0635\u0644 / \u0627\u0644\u0637\u0642\u0633", coverage_label: "\u0627\u0644\u062a\u063a\u0637\u064a\u0629", count_label: "\u0639\u062f\u062f \u0627\u0644\u0625\u0637\u0644\u0627\u0644\u0627\u062a",
+  hist_label: "\u0622\u062e\u0631 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627", cur_closet_label: "\u062d\u0633\u0627\u0628\u0643", your_closets_label: "\u0627\u0644\u062d\u0633\u0627\u0628", ai_label: "\u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u0627\u0644\u0630\u0643\u064a",
+  any: "\u0627\u0644\u0643\u0644", modest: "\u0645\u062d\u062a\u0634\u0645", standard: "\u0639\u0627\u062f\u064a",
+  name_l: "\u0627\u0644\u0627\u0633\u0645", desc_l: "\u0627\u0644\u0648\u0635\u0641", cat_l: "\u0627\u0644\u0641\u0626\u0629", color_l: "\u0627\u0644\u0644\u0648\u0646",
+  form_l: "\u0627\u0644\u0631\u0633\u0645\u064a\u0629 \u2014 \u0627\u062e\u062a\u0627\u0631\u064a \u0643\u0644 \u0645\u0627 \u064a\u0646\u0637\u0628\u0642", warm_l: "\u0627\u0644\u062f\u0641\u0621", cover_l: "\u0627\u0644\u062a\u063a\u0637\u064a\u0629",
+  ph_name: "\u0645\u062b\u0627\u0644: \u0628\u0644\u0648\u0632\u0629 \u0633\u0627\u062a\u0627\u0646 \u0648\u0631\u062f\u064a\u0629", ph_desc: "\u0648\u0635\u0641 \u0642\u0635\u064a\u0631 \u0628\u0633\u062a\u0627\u064a\u0644 \u0628\u0646\u062a\u0631\u0633\u062a \u2014 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u064a\u0643\u062a\u0628\u0647 \u0644\u0643", ph_color: "\u0645\u062b\u0627\u0644: \u0648\u0631\u062f\u064a\u060c \u0639\u0627\u062c\u064a\u060c \u0623\u0633\u0648\u062f",
+  new_piece: "\u0642\u0637\u0639\u0629 \u062c\u062f\u064a\u062f\u0629", edit_piece: "\u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0642\u0637\u0639\u0629", add_piece: "\u0623\u0636\u064a\u0641\u064a \u0642\u0637\u0639\u0629", add_tile: "\u0623\u0636\u064a\u0641\u064a \u0642\u0637\u0639\u0629",
+  take_photo: "\ud83d\udcf7 &nbsp;\u0627\u0644\u062a\u0642\u0637\u064a \u0635\u0648\u0631\u0629", choose_lib: "\ud83d\uddbc &nbsp;\u0627\u062e\u062a\u0627\u0631\u064a \u0645\u0646 \u0627\u0644\u0635\u0648\u0631",
+  save_item: "\u0627\u062d\u0641\u0638\u064a \u0641\u064a \u0627\u0644\u062e\u0632\u0627\u0646\u0629", saving_btn: "\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0641\u0638\u2026", delete_item: "\u0627\u062d\u0630\u0641\u064a \u0645\u0646 \u0627\u0644\u062e\u0632\u0627\u0646\u0629",
+  nav_closet: "\u0627\u0644\u062e\u0632\u0627\u0646\u0629", nav_style: "\u0627\u0644\u062a\u0646\u0633\u064a\u0642", nav_history: "\u0627\u0644\u0633\u062c\u0644", nav_closets: "\u0627\u0644\u062e\u0632\u0627\u0646\u0627\u062a",
+  new_closet_btn: "\uff0b \u0627\u0628\u062f\u0626\u064a \u062e\u0632\u0627\u0646\u0629 \u062c\u062f\u064a\u062f\u0629 \u0641\u0627\u0631\u063a\u0629",
+  share_desc: "\u062e\u0632\u0627\u0646\u062a\u0643 \u0645\u062d\u0641\u0648\u0638\u0629 \u0641\u064a \u0627\u0644\u0633\u062d\u0627\u0628\u0629 \u0648\u062a\u062a\u0632\u0627\u0645\u0646 \u0645\u0639 \u0623\u064a \u062c\u0647\u0627\u0632 \u062a\u0633\u062c\u0651\u0644\u064a\u0646 \u0639\u0644\u064a\u0647. \u062e\u0627\u0635\u0629 \u0628\u062d\u0633\u0627\u0628\u0643 \u2014 \u0644\u0627 \u0623\u062d\u062f \u063a\u064a\u0631\u0643 \u064a\u0631\u0627\u0647\u0627.",
+  api_desc: "\u062e\u0627\u0631\u062c \u062a\u0637\u0628\u064a\u0642 \u0643\u0644\u0648\u062f\u060c \u064a\u062d\u062a\u0627\u062c \u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u0627\u0644\u0630\u0643\u064a \u0648\u0627\u0644\u0623\u0648\u0635\u0627\u0641 \u0625\u0644\u0649 \u0645\u0641\u062a\u0627\u062d Anthropic API \u0627\u0644\u062e\u0627\u0635 \u0628\u0643 (\u0645\u0646 console.anthropic.com). \u0627\u0644\u0635\u0642\u064a\u0647 \u0647\u0646\u0627 \u2014 \u064a\u0628\u0642\u0649 \u0639\u0644\u0649 \u062c\u0647\u0627\u0632\u0643 \u0641\u0642\u0637. \u0648\u0628\u062f\u0648\u0646\u0647 \u064a\u0639\u0645\u0644 \u0643\u0644 \u0634\u064a\u0621\u060c \u0644\u0643\u0646 \u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u064a\u062f\u0648\u064a.",
+  api_key_l: "\u0645\u0641\u062a\u0627\u062d API", save_key: "\u0627\u062d\u0641\u0638\u064a \u0627\u0644\u0645\u0641\u062a\u0627\u062d",
+  style_one: "\u0646\u0633\u0651\u0642\u064a \u0644\u064a \u0625\u0637\u0644\u0627\u0644\u0629 \u0648\u0627\u062d\u062f\u0629", style_many: "\u0646\u0633\u0651\u0642\u064a \u0644\u064a {n} \u0625\u0637\u0644\u0627\u0644\u0627\u062a",
+  look_of: "\u0625\u0637\u0644\u0627\u0644\u0629 {i} \u0645\u0646 {n}", closest: "\u0623\u0642\u0631\u0628 \u062a\u0637\u0627\u0628\u0642", wear: "\u0633\u0623\u0644\u0628\u0633 \u0647\u0630\u0647", logged: "\u062a\u0645 \u0627\u0644\u062a\u0633\u062c\u064a\u0644 \u2713",
+  writing: "\u062c\u0627\u0631\u064d \u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0648\u0635\u0641\u2026", styling: "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u0646\u0633\u064a\u0642\u2026",
+  missing_h: "\u064a\u0633\u062a\u062d\u0642 \u0627\u0644\u0625\u0636\u0627\u0641\u0629 \u0644\u062e\u0632\u0627\u0646\u062a\u0643", or: "\u0623\u0648",
+  miss_top: "\u062a\u0648\u0628 {f} \u064a\u0646\u0627\u0633\u0628 {w}", miss_bottom: "\u0642\u0637\u0639\u0629 \u0633\u0641\u0644\u064a\u0629 {f} \u062a\u0646\u0627\u0633\u0628 {w}", miss_shoes: "\u062d\u0630\u0627\u0621 {f} \u064a\u0646\u0627\u0633\u0628 {s}",
+  miss_outer: "\u0645\u0639\u0637\u0641 \u062f\u0627\u0641\u0626 \u0644\u0640{w}", miss_modest: "\u0627\u0644\u0645\u0632\u064a\u062f \u0645\u0646 \u0627\u0644\u0642\u0637\u0639 \u0627\u0644\u0645\u062d\u062a\u0634\u0645\u0629 \u0639\u0627\u0644\u064a\u0629 \u0627\u0644\u062a\u063a\u0637\u064a\u0629", miss_hijab: "\u062d\u062c\u0627\u0628 \u064a\u064f\u0643\u0645\u0651\u0644 \u0625\u0637\u0644\u0627\u0644\u0627\u062a\u0643 \u0627\u0644\u0645\u062d\u062a\u0634\u0645\u0629",
+  empty_closet: "\u0635\u0648\u0651\u0631\u064a \u0623\u0648 \u0627\u0631\u0641\u0639\u064a \u0623\u0648\u0644 \u0642\u0637\u0639\u0629<br>\u0644\u062a\u0628\u062f\u0626\u064a \u0628\u0646\u0627\u0621 \u062e\u0632\u0627\u0646\u062a\u0643.",
+  empty_hist: "\u0644\u0645 \u062a\u0633\u062c\u0651\u0644\u064a \u0623\u064a \u0625\u0637\u0644\u0627\u0644\u0629 \u0628\u0639\u062f. \u0627\u0644\u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0627\u0644\u062a\u064a \u062a\u0633\u062c\u0644\u064a\u0646\u0647\u0627 \u062a\u0628\u0642\u0649 \u0647\u0646\u0627 \u0623\u0633\u0628\u0648\u0639\u064a\u0646 \u062d\u062a\u0649 \u0644\u0627 \u062a\u062a\u0643\u0631\u0631.",
+  empty_gen: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0642\u0637\u0639 \u0643\u0627\u0641\u064a\u0629 \u0644\u0647\u0630\u0647 \u0627\u0644\u062a\u0631\u0643\u064a\u0628\u0629 \u0628\u0639\u062f \u2014 \u0623\u0636\u064a\u0641\u064a \u062a\u0648\u0628\u064b\u0627 \u0648\u0642\u0637\u0639\u0629 \u0633\u0641\u0644\u064a\u0629 \u0648\u062d\u0630\u0627\u0621\u064b (\u0623\u0648 \u0641\u0633\u062a\u0627\u0646\u064b\u0627 \u0648\u062d\u0630\u0627\u0621\u064b) \u0648\u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627.",
+  loading: "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644\u2026", saving: "\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0641\u0638\u2026", saved_pill: "{n} \u0642\u0637\u0639\u0629 \u2713 \u0645\u062d\u0641\u0648\u0638\u0629", failed_pill: "\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638!",
+  toast_saved: "\u062a\u0645 \u0627\u0644\u062d\u0641\u0638 \u0641\u064a \u0627\u0644\u062e\u0632\u0627\u0646\u0629", toast_removed: "\u062a\u0645 \u0627\u0644\u062d\u0630\u0641", toast_hist: "\u062d\u064f\u0641\u0638\u062a \u0641\u064a \u0633\u062c\u0644 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627",
+  toast_new_closet: "\u0627\u0644\u062e\u0632\u0627\u0646\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629 {id} \u062c\u0627\u0647\u0632\u0629", toast_opened: "\u0641\u064f\u062a\u062d\u062a \u0627\u0644\u062e\u0632\u0627\u0646\u0629 {id}",
+  toast_savefail: "\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638 \u2014 \u062a\u062d\u0642\u0642\u064a \u0648\u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627", toast_photo: "\u062a\u0639\u0630\u0651\u0631\u062a \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0635\u0648\u0631\u0629",
+  ai_looking: "\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u064a\u0641\u062d\u0635\u2026", ai_tagged: "\u062a\u0645 \u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u2713 \u0631\u0627\u062c\u0639\u064a \u0628\u0627\u0644\u0623\u0633\u0641\u0644", ai_unavail: "\u063a\u064a\u0631 \u0645\u062a\u0627\u062d \u2014 \u0635\u0646\u0651\u0641\u064a \u064a\u062f\u0648\u064a\u064b\u0627",
+  ai_needkey: "\u0623\u0636\u064a\u0641\u064a \u0645\u0641\u062a\u0627\u062d AI \u0645\u0646 \u062a\u0628\u0648\u064a\u0628 \u0627\u0644\u062e\u0632\u0627\u0646\u0627\u062a\u060c \u0623\u0648 \u0635\u0646\u0651\u0641\u064a \u064a\u062f\u0648\u064a\u064b\u0627",
+  active_now: "\u0627\u0644\u0646\u0634\u0637\u0629 \u0627\u0644\u0622\u0646", tap_open: "\u0627\u0636\u063a\u0637\u064a \u0644\u0644\u0641\u062a\u062d",
+  lang_label: "Language / \u0627\u0644\u0644\u063a\u0629",
+  auth_sub: "\u0633\u062c\u0651\u0644\u064a \u0627\u0644\u062f\u062e\u0648\u0644 \u0625\u0644\u0649 \u062e\u0632\u0627\u0646\u062a\u0643", auth_login: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644", auth_signup: "\u0625\u0646\u0634\u0627\u0621 \u062d\u0633\u0627\u0628",
+  auth_toswitch_signup: "\u0645\u0633\u062a\u062e\u062f\u0645\u0629 \u062c\u062f\u064a\u062f\u0629\u061f \u0623\u0646\u0634\u0626\u064a \u062d\u0633\u0627\u0628\u064b\u0627", auth_toswitch_login: "\u0644\u062f\u064a\u0643 \u062d\u0633\u0627\u0628\u061f \u0633\u062c\u0651\u0644\u064a \u0627\u0644\u062f\u062e\u0648\u0644",
+  auth_bad: "\u0627\u0644\u0628\u0631\u064a\u062f \u0623\u0648 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d\u0629", auth_exists: "\u0647\u0630\u0627 \u0627\u0644\u0628\u0631\u064a\u062f \u0645\u0633\u062c\u0644 \u0645\u0633\u0628\u0642\u064b\u0627 \u2014 \u062c\u0631\u0651\u0628\u064a \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644",
+  auth_weak: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u064a\u062c\u0628 \u0623\u0644\u0627 \u062a\u0642\u0644 \u0639\u0646 \u0663 \u0623\u062d\u0631\u0641", auth_generic: "\u062d\u062f\u062b \u062e\u0637\u0623 \u2014 \u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627",
+  auth_needfields: "\u0623\u062f\u062e\u0644\u064a \u0627\u0644\u0628\u0631\u064a\u062f \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631", logout: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c", signed_as: "\u0645\u0633\u062c\u0651\u0644\u0629 \u0628\u0627\u0633\u0645 {email}",
+  toast_key_saved: "\u062d\u064f\u0641\u0638 \u0645\u0641\u062a\u0627\u062d AI \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u062c\u0647\u0627\u0632", toast_key_removed: "\u0623\u064f\u0632\u064a\u0644 \u0645\u0641\u062a\u0627\u062d AI",
+  install_lead: "\u0627\u062c\u0639\u0644\u064a \u0631\u0627\u0643 \u062a\u0637\u0628\u064a\u0642\u064b\u0627 \u062d\u0642\u064a\u0642\u064a\u064b\u0627:",
+  install_ios: "\u0627\u0636\u063a\u0637\u064a \u0632\u0631 \u0627\u0644\u0645\u0634\u0627\u0631\u0643\u0629 \u0641\u064a \u0633\u0641\u0627\u0631\u064a \u062b\u0645 \u201c\u0625\u0636\u0627\u0641\u0629 \u0625\u0644\u0649 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629\u201d. \u0633\u064a\u062d\u0635\u0644 \u0631\u0627\u0643 \u0639\u0644\u0649 \u0623\u064a\u0642\u0648\u0646\u062a\u0647 \u0648\u064a\u0641\u062a\u062d \u0628\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629.",
+  install_android: "\u0627\u0641\u062a\u062d\u064a \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0645\u062a\u0635\u0641\u062d (\u22ee) \u0648\u0627\u062e\u062a\u0627\u0631\u064a \u201c\u0625\u0636\u0627\u0641\u0629 \u0625\u0644\u0649 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629\u201d \u0623\u0648 \u201c\u062a\u062b\u0628\u064a\u062a \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u201d.",
+  install_prompt: "<u>\u0627\u0636\u063a\u0637\u064a \u0647\u0646\u0627 \u0644\u062a\u062b\u0628\u064a\u062a \u0631\u0627\u0643</u> \u2014 \u0633\u064a\u062d\u0635\u0644 \u0639\u0644\u0649 \u0623\u064a\u0642\u0648\u0646\u062a\u0647 \u0648\u064a\u0641\u062a\u062d \u0628\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629."
+}
+};
+var LBL = {
+en: {
+  cat: {top:"Top", bottom:"Bottom", dress:"Dress", outerwear:"Outerwear", shoes:"Shoes", accessory:"Accessory", hijab:"Hijab"},
+  occ: {party:"Party", friends:"Friends", gathering:"Gathering", work:"Work", sport:"Sport", picnic:"Picnic"},
+  wea: {summer:"Summer", spring:"Spring", autumn:"Autumn", winter:"Winter"},
+  form: {casual:"Casual", smart:"Smart", formal:"Formal", sporty:"Sporty"},
+  warm: {0:"All-seasons", 1:"Light", 2:"Medium", 3:"Warm"}
+},
+ar: {
+  cat: {top:"\u062a\u0648\u0628", bottom:"\u0633\u0641\u0644\u064a", dress:"\u0641\u0633\u062a\u0627\u0646", outerwear:"\u0645\u0639\u0637\u0641", shoes:"\u062d\u0630\u0627\u0621", accessory:"\u0625\u0643\u0633\u0633\u0648\u0627\u0631", hijab:"\u062d\u062c\u0627\u0628"},
+  occ: {party:"\u062d\u0641\u0644\u0629", friends:"\u0645\u0639 \u0627\u0644\u0635\u062f\u064a\u0642\u0627\u062a", gathering:"\u0639\u0632\u064a\u0645\u0629", work:"\u0639\u0645\u0644", sport:"\u0631\u064a\u0627\u0636\u0629", picnic:"\u0646\u0632\u0647\u0629"},
+  wea: {summer:"\u0627\u0644\u0635\u064a\u0641", spring:"\u0627\u0644\u0631\u0628\u064a\u0639", autumn:"\u0627\u0644\u062e\u0631\u064a\u0641", winter:"\u0627\u0644\u0634\u062a\u0627\u0621"},
+  form: {casual:"\u0643\u0627\u062c\u0648\u0627\u0644", smart:"\u0623\u0646\u064a\u0642", formal:"\u0631\u0633\u0645\u064a", sporty:"\u0631\u064a\u0627\u0636\u064a"},
+  warm: {0:"\u0643\u0644 \u0627\u0644\u0641\u0635\u0648\u0644", 1:"\u062e\u0641\u064a\u0641", 2:"\u0645\u062a\u0648\u0633\u0637", 3:"\u062f\u0627\u0641\u0626"}
+}
+};
+var CHIP_MAP = {"f-category":"cat","f-formality":"form","occasion-chips":"occ","weather-chips":"wea"};
+var OCCASION_PHRASE_AR = {
+  party: "\u0627\u0633\u062a\u0639\u062f\u064a \u0644\u062a\u062e\u0637\u0641\u064a \u0627\u0644\u0623\u0646\u0638\u0627\u0631 \u0645\u0646 \u0623\u0648\u0644 \u0644\u062d\u0638\u0629.",
+  friends: "\u0625\u0637\u0644\u0627\u0644\u0629 \u0645\u0631\u064a\u062d\u0629 \u0648\u0639\u0641\u0648\u064a\u0629 \u062a\u0646\u0627\u0633\u0628 \u0623\u062d\u0644\u0649 \u0627\u0644\u062c\u0644\u0633\u0627\u062a.",
+  gathering: "\u062f\u0627\u0641\u0626\u0629 \u0648\u0623\u0646\u064a\u0642\u0629 \u0628\u0627\u0644\u0642\u062f\u0631 \u0627\u0644\u0645\u0646\u0627\u0633\u0628.",
+  work: "\u0623\u0646\u0627\u0642\u0629 \u0647\u0627\u062f\u0626\u0629 \u0648\u062d\u0636\u0648\u0631 \u0648\u0627\u062b\u0642.",
+  sport: "\u0645\u0635\u0645\u0645\u0629 \u0644\u0644\u062d\u0631\u0643\u0629 \u2014 \u0644\u0627 \u0634\u064a\u0621 \u064a\u0639\u064a\u0642\u0643.",
+  picnic: "\u0625\u0637\u0644\u0627\u0644\u0629 \u0645\u0634\u0645\u0633\u0629 \u062a\u0646\u0627\u0633\u0628 \u062c\u0644\u0633\u0629 \u0639\u0644\u0649 \u0627\u0644\u0639\u0634\u0628."
+};
+function t(k){
+  var d = I18N[LANG] || I18N.en;
+  if(d[k] !== undefined) return d[k];
+  if(I18N.en[k] !== undefined) return I18N.en[k];
+  return k;
+}
+function fmt(s, o){
+  return String(s).replace(/\{(\w+)\}/g, function(_, k){ return o[k] !== undefined ? o[k] : "{"+k+"}"; });
+}
+function lbl(m, v){
+  var d = LBL[LANG] || LBL.en;
+  if(d[m] && d[m][v] !== undefined) return d[m][v];
+  if(LBL.en[m] && LBL.en[m][v] !== undefined) return LBL.en[m][v];
+  return v;
+}
+function styleBtnLabel(){
+  return selCount === 1 ? t("style_one") : fmt(t("style_many"), {n: selCount});
+}
+function markLangChips(){
+  var e = document.getElementById("lang-sw-en"), a = document.getElementById("lang-sw-ar");
+  if(e) e.classList.toggle("active", LANG === "en");
+  if(a) a.classList.toggle("active", LANG === "ar");
+}
+function applyLanguage(l){
+  LANG = l;
+  document.documentElement.lang = l;
+  document.documentElement.dir = (l === "ar") ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(function(el){
+    el.innerHTML = t(el.getAttribute("data-i18n"));
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){
+    el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph")));
+  });
+  buildAllChips();
+  var gb = document.getElementById("btn-generate");
+  if(gb) gb.textContent = styleBtnLabel();
+  if(currentUser){
+    renderCloset(); renderHistory(); renderClosetList();
+    setSavePill("ok", fmt(t("saved_pill"), {n: items.length}));
+  }
+  var itx = document.getElementById("install-text");
+  if(itx && itx.innerHTML.indexOf("<u>") < 0){
+    itx.textContent = IS_IOS ? t("install_ios") : t("install_android");
+  }
+  markLangChips();
+}
+function chooseLang(l){
+  applyLanguage(l);
+  lsSet("rack_lang", l);
+  if(currentUser) saveLangToCloud(l);
+  var ov = document.getElementById("lang-overlay");
+  if(ov){ ov.classList.remove("show"); ov.style.display = "none"; }
+}
+
+
+// ================= PWA bits =================
+// dynamic manifest (lets Android Chrome offer "Install app")
+try{
+  var manifest = {
+    name: "Rack — your closet, styled",
+    short_name: "Rack",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#F6EFEC",
+    theme_color: "#F6EFEC",
+    icons: [{
+      src: makeIcon(512),
+      sizes: "512x512",
+      type: "image/png"
+    },{
+      src: makeIcon(192),
+      sizes: "192x192",
+      type: "image/png"
+    }]
+  };
+  var mLink = document.createElement("link");
+  mLink.rel = "manifest";
+  mLink.href = "data:application/manifest+json," + encodeURIComponent(JSON.stringify(manifest));
+  document.head.appendChild(mLink);
+  document.getElementById("touch-icon").href = makeIcon(180);
+}catch(e){}
+
+function makeIcon(size){
+  var cv = document.createElement("canvas");
+  cv.width = size; cv.height = size;
+  var ctx = cv.getContext("2d");
+  ctx.fillStyle = "#F6EFEC";
+  ctx.fillRect(0,0,size,size);
+  ctx.fillStyle = "#B4637A";
+  ctx.beginPath();
+  ctx.arc(size*0.5, size*0.30, size*0.055, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = "#2B2226";
+  ctx.font = "600 " + Math.round(size*0.52) + "px Georgia, 'Times New Roman', serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("R", size*0.5, size*0.62);
+  return cv.toDataURL("image/png");
+}
+
+// install hint banner
+(function(){
+  var standalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+  if(navigator.standalone) standalone = true;
+  if(standalone) return;
+  var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  IS_IOS = isIOS;
+  var banner = document.getElementById("install-banner");
+  var text = document.getElementById("install-text");
+  if(isIOS){
+    text.textContent = t("install_ios");
+  } else {
+    text.textContent = t("install_android");
+  }
+  banner.style.display = "block";
+  document.getElementById("install-dismiss").onclick = function(){
+    banner.style.display = "none";
+  };
+})();
+
+// android install prompt
+var deferredInstall = null;
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();
+  deferredInstall = e;
+  var banner = document.getElementById("install-banner");
+  banner.style.display = "block";
+  document.getElementById("install-text").innerHTML = t("install_prompt");
+  banner.onclick = function(ev){
+    if(ev.target.id === "install-dismiss") return;
+    if(deferredInstall){ deferredInstall.prompt(); deferredInstall = null; }
+  };
+});
+
+// ================= Constants =================
+var CATEGORIES = ["top","bottom","dress","outerwear","shoes","accessory","hijab"];
+var FORMALITIES = ["casual","smart","formal","sporty"];
+var WARMTHS = [{v:0,l:"All-seasons"},{v:1,l:"Light"},{v:2,l:"Medium"},{v:3,l:"Warm"}];
+var OCCASIONS = ["party","friends","gathering","work","sport","picnic"];
+var WEATHERS = ["summer","spring","autumn","winter"];
+
+var FORMALITY_BY_OCCASION = {
+  party: ["formal","smart"],
+  friends: ["casual","smart"],
+  gathering: ["smart","casual"],
+  work: ["formal","smart"],
+  sport: ["sporty"],
+  picnic: ["casual"]
+};
+var WARMTH_BY_WEATHER = { summer:1, spring:2, autumn:2, winter:3 };
+var OCCASION_PHRASE = {
+  party: "Ready to turn heads the second you walk in.",
+  friends: "Easy, unbothered, and made for good conversation.",
+  gathering: "Warm, welcoming, and just dressed-up enough.",
+  work: "Polished, composed, and boardroom-ready.",
+  sport: "Built to move — nothing here is holding you back.",
+  picnic: "Sun-soaked and made for a blanket in the grass."
+};
+
+// ================= State =================
+var closetId = null;
+var closetIds = [];
+var items = [];
+var history = [];
+var currentTagItemId = null;
+var pendingImg = null;
+var selOccasion = "friends";
+var selWeather = "summer";
+var selModest = false;
+var selCount = 3;
+var apiKey = "";
+
+function genId(){ return Math.random().toString(36).slice(2,8).toUpperCase(); }
+function keyMeta(){ return "rack_meta"; }
+function keyItems(id){ return "rack_items_" + id; }
+function keyHist(id){ return "rack_hist_" + id; }
+function keyImg(itemId){ return "rack_img_" + itemId; }
+
+function showToast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2400);
+}
+function setSavePill(state, text){
+  var p = document.getElementById("save-pill");
+  p.className = "save-pill " + (state || "");
+  p.textContent = text;
+}
+function escapeHtml(s){
+  var d = document.createElement("div");
+  d.textContent = s || "";
+  return d.innerHTML;
+}
+function warmthLabel(v){
+  return lbl("warm", v);
+}
+function formList(it){
+  return (it.formalities || []).map(function(f){ return lbl("form", f); }).join("/");
+}
+function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+// ================= Supabase cloud =================
+var SUPABASE_URL = "https://jyigzeqtvyxepuxzjncg.supabase.co";
+var SUPABASE_KEY = "sb_publishable_-AMvlieUtW44aiMZBxTGlw_NDMOMwkA";
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var currentUser = null;
+
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+function dataUrlToBlob(dataUrl){
+  var parts = dataUrl.split(",");
+  var mime = (parts[0].match(/:(.*?);/) || [])[1] || "image/jpeg";
+  var bin = atob(parts[1]);
+  var arr = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++){ arr[i] = bin.charCodeAt(i); }
+  return new Blob([arr], {type: mime});
+}
+async function uploadPhoto(itemId, dataUrl){
+  try{
+    var path = currentUser.id + "/" + itemId + ".jpg";
+    var blob = dataUrlToBlob(dataUrl);
+    var up = await sb.storage.from("closet").upload(path, blob, {upsert: true, contentType: "image/jpeg"});
+    if(up.error) return "";
+    var pub = sb.storage.from("closet").getPublicUrl(path);
+    return pub.data.publicUrl || "";
+  }catch(e){ return ""; }
+}
+async function deletePhoto(itemId){
+  try{ await sb.storage.from("closet").remove([currentUser.id + "/" + itemId + ".jpg"]); }catch(e){}
+}
+function rowToItem(r){
+  return {
+    id: r.id, name: r.name || "", desc: r.description || "",
+    category: r.category || "top", color: r.color || "neutral",
+    formalities: (r.formalities && r.formalities.length) ? r.formalities : ["casual"],
+    warmth: (r.warmth === null || r.warmth === undefined) ? 2 : r.warmth,
+    modest: !!r.modest, img: r.image_url || "", createdAt: r.created_at
+  };
+}
+async function loadLangFromCloud(){
+  try{
+    var q = await sb.from("profiles").select("lang").eq("user_id", currentUser.id).maybeSingle();
+    if(q.data && q.data.lang) return q.data.lang;
+  }catch(e){}
+  return null;
+}
+async function saveLangToCloud(l){
+  try{ await sb.from("profiles").upsert({user_id: currentUser.id, lang: l}); }catch(e){}
+}
+
+// ================= Load everything for the signed-in user =================
+async function loadCloset(){
+  setSavePill("", t("loading"));
+  var cd = document.getElementById("closet-code-display");
+  if(cd) cd.textContent = currentUser.email;
+
+  try{
+    var q = await sb.from("items").select("*").order("created_at", {ascending: true});
+    items = (q.data || []).map(rowToItem);
+  }catch(e){ items = []; }
+
+  try{
+    var h = await sb.from("history").select("*").order("worn_at", {ascending: false});
+    history = (h.data || []).map(function(r){
+      return { id: r.id, date: r.worn_at, occasion: r.occasion, weather: r.weather,
+               modest: !!r.modest, itemIds: r.item_ids || [] };
+    });
+  }catch(e){ history = []; }
+
+  setSavePill("ok", fmt(t("saved_pill"), {n: items.length}));
+  renderCloset();
+  renderHistory();
+  renderClosetList();
+  document.getElementById("outfit-results").innerHTML = "";
+}
+
+// kept for compatibility with the rest of the app
+async function saveItemsMeta(){ setSavePill("ok", fmt(t("saved_pill"), {n: items.length})); return true; }
+async function saveHistory(){ /* handled at insert time */ }
+
+// ================= Navigation =================
+var navBtns = document.querySelectorAll(".nav-btn");
+navBtns.forEach(function(btn){
+  btn.addEventListener("click", function(){
+    navBtns.forEach(function(b){ b.classList.remove("active"); });
+    document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+    btn.classList.add("active");
+    document.getElementById("view-" + btn.dataset.view).classList.add("active");
+  });
+});
+
+// ================= Image handling =================
+function resizeImage(file){
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var maxW = 360;
+        var scale = Math.min(1, maxW / img.width);
+        var w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+        var canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.5));
+      };
+      img.onerror = function(){ reject(new Error("bad image")); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){ reject(new Error("read failed")); };
+    reader.readAsDataURL(file);
+  });
+}
+function handleFileInput(input){
+  input.addEventListener("change", async function(e){
+    var f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if(!f) return;
+    document.getElementById("source-overlay").classList.remove("show");
+    try{
+      var dataUrl = await resizeImage(f);
+      openTagSheet(null, dataUrl);
+      analyzeWithAI(dataUrl);
+    }catch(err){
+      showToast(t("toast_photo"));
+    }
+  });
+}
+handleFileInput(document.getElementById("file-camera"));
+handleFileInput(document.getElementById("file-library"));
+document.getElementById("btn-src-camera").addEventListener("click", function(){
+  document.getElementById("file-camera").click();
+});
+document.getElementById("btn-src-library").addEventListener("click", function(){
+  document.getElementById("file-library").click();
+});
+document.getElementById("source-overlay").addEventListener("click", function(e){
+  if(e.target.id === "source-overlay") e.target.classList.remove("show");
+});
+
+// ================= AI =================
+function aiHeaders(){
+  var h = { "Content-Type": "application/json" };
+  if(apiKey){
+    h["x-api-key"] = apiKey;
+    h["anthropic-version"] = "2023-06-01";
+    h["anthropic-dangerous-direct-browser-access"] = "true";
+  }
+  return h;
+}
+async function analyzeWithAI(dataUrl){
+  var badge = document.getElementById("ai-badge");
+  var badgeText = document.getElementById("ai-badge-text");
+  badge.style.display = "flex";
+  if(!apiKey){
+    badgeText.textContent = t("ai_needkey");
+    badge.querySelector(".pulse").style.background = "#B98A4E";
+    return;
+  }
+  badgeText.textContent = t("ai_looking");
+  var base64 = dataUrl.split(",")[1];
+  try{
+    var response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: aiHeaders(),
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: base64 } },
+            { type: "text", text: "You are tagging one clothing item for a wardrobe app. Look at the photo and respond with ONLY a JSON object, no markdown, no backticks, no other text. Schema: {\"name\": short catchy item name max 4 words, \"desc\": a 1-2 sentence Pinterest/Instagram-style description of this piece, warm and aesthetic, mentioning fabric feel, vibe, and what it pairs with, \"category\": one of top|bottom|dress|outerwear|shoes|accessory|hijab (use hijab for a headscarf/veil), \"color\": main color one or two words, \"formalities\": array with EVERY level this piece can be worn at, from casual|smart|formal|sporty (e.g. dark jeans could be [\"casual\",\"smart\"]), \"warmth\": 0 if suitable for all seasons (e.g. a basic tee, plain jeans, sneakers) else 1 for light/summer fabric 2 for medium 3 for warm/winter, \"modest\": true if high coverage (long sleeves, high neckline, loose fit, or covers knees and shoulders) else false}. If the photo is not clothing, still guess the closest match." + (LANG === "ar" ? " Write the name and desc values in Arabic." : "") }
+          ]
+        }]
+      })
+    });
+    var data = await response.json();
+    var text = "";
+    if(data && data.content){
+      for(var i=0;i<data.content.length;i++){
+        if(data.content[i].type === "text") text += data.content[i].text;
+      }
+    }
+    var clean = text.replace(/```json|```/g, "").trim();
+    var parsed = JSON.parse(clean);
+    if(currentTagItemId === null && pendingImg){
+      if(parsed.name) document.getElementById("f-name").value = parsed.name;
+      if(parsed.desc) document.getElementById("f-desc").value = parsed.desc;
+      if(parsed.color) document.getElementById("f-color").value = parsed.color;
+      if(CATEGORIES.indexOf(parsed.category) >= 0) setChipVal("f-category", parsed.category);
+      var forms = parsed.formalities;
+      if(typeof forms === "string") forms = [forms];
+      if(Array.isArray(forms)){
+        forms = forms.filter(function(f){ return FORMALITIES.indexOf(f) >= 0; });
+        if(forms.length) setMultiChips("f-formality", forms);
+      }
+      var w = parseInt(parsed.warmth);
+      if(w >= 0 && w <= 3) setChipVal("f-warmth", w);
+      setToggleVal("f-modest", !!parsed.modest);
+      badgeText.textContent = t("ai_tagged");
+      badge.querySelector(".pulse").style.animation = "none";
+      badge.querySelector(".pulse").style.opacity = "1";
+    }
+  }catch(err){
+    badgeText.textContent = t("ai_unavail");
+    badge.querySelector(".pulse").style.background = "#B5533C";
+  }
+}
+document.getElementById("btn-save-key").addEventListener("click", async function(){
+  apiKey = document.getElementById("f-apikey").value.trim();
+  lsSet("rack_apikey", apiKey);
+  showToast(apiKey ? t("toast_key_saved") : t("toast_key_removed"));
+});
+
+// ================= Closet grid =================
+function renderCloset(){
+  var grid = document.getElementById("closet-grid");
+  grid.innerHTML = "";
+
+  var addTile = document.createElement("div");
+  addTile.className = "add-tile";
+  addTile.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg><span>' + t("add_tile") + '</span>';
+  addTile.onclick = function(){
+    document.getElementById("source-overlay").classList.add("show");
+  };
+  grid.appendChild(addTile);
+
+  if(items.length === 0){
+    var empty = document.createElement("div");
+    empty.style.gridColumn = "span 2";
+    empty.className = "empty-state";
+    empty.innerHTML = '<div class="glyph">\u2740</div>' + t("empty_closet");
+    grid.appendChild(empty);
+  }
+
+  items.slice().reverse().forEach(function(it){
+    var card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML =
+      '<div class="item-tag ' + (it.modest ? "modest" : "") + '">' + lbl("cat", it.category) + '</div>' +
+      '<img src="' + (it.img || "") + '">' +
+      '<div class="item-meta">' +
+        '<div class="item-name">' + escapeHtml(it.name) + '</div>' +
+        (it.desc ? '<div class="item-desc">' + escapeHtml(it.desc) + '</div>' : '') +
+        '<div class="item-sub">' + escapeHtml(it.color) + ' \u00B7 ' + formList(it) + ' \u00B7 ' + warmthLabel(it.warmth) + '</div>' +
+      '</div>';
+    card.onclick = function(){ openTagSheet(it); };
+    grid.appendChild(card);
+  });
+}
+
+// ================= Tag sheet =================
+function buildSingleChips(containerId, values){
+  var c = document.getElementById(containerId);
+  c.innerHTML = "";
+  values.forEach(function(v){
+    var val = (typeof v === "object") ? v.v : v;
+    var label = (typeof v === "object") ? lbl("warm", v.v) : lbl(CHIP_MAP[containerId] || "", v);
+    var chip = document.createElement("div");
+    chip.className = "chip";
+    chip.textContent = label;
+    chip.dataset.val = val;
+    chip.onclick = function(){
+      c.querySelectorAll(".chip").forEach(function(x){ x.classList.remove("active"); });
+      chip.classList.add("active");
+    };
+    c.appendChild(chip);
+  });
+}
+function buildMultiChips(containerId, values){
+  var c = document.getElementById(containerId);
+  c.innerHTML = "";
+  values.forEach(function(v){
+    var chip = document.createElement("div");
+    chip.className = "chip";
+    chip.textContent = lbl("form", v);
+    chip.dataset.val = v;
+    chip.onclick = function(){
+      chip.classList.toggle("active");
+      if(c.querySelectorAll(".chip.active").length === 0) chip.classList.add("active");
+    };
+    c.appendChild(chip);
+  });
+}
+// tag-sheet chips are built in buildAllChips()
+document.querySelectorAll("#f-modest .toggle-opt").forEach(function(opt){
+  opt.onclick = function(){
+    opt.parentElement.querySelectorAll(".toggle-opt").forEach(function(o){ o.classList.remove("active"); });
+    opt.classList.add("active");
+  };
+});
+function getChipVal(containerId){
+  var a = document.querySelector("#" + containerId + " .chip.active");
+  return a ? a.dataset.val : null;
+}
+function getMultiChips(containerId){
+  var out = [];
+  document.querySelectorAll("#" + containerId + " .chip.active").forEach(function(c){
+    out.push(c.dataset.val);
+  });
+  return out;
+}
+function getToggleVal(containerId){
+  var a = document.querySelector("#" + containerId + " .toggle-opt.active");
+  return a ? a.dataset.val === "yes" : false;
+}
+function setChipVal(containerId, val){
+  document.querySelectorAll("#" + containerId + " .chip").forEach(function(c){
+    c.classList.toggle("active", String(c.dataset.val) === String(val));
+  });
+}
+function setMultiChips(containerId, vals){
+  document.querySelectorAll("#" + containerId + " .chip").forEach(function(c){
+    c.classList.toggle("active", vals.indexOf(c.dataset.val) >= 0);
+  });
+}
+function setToggleVal(containerId, isYes){
+  document.querySelectorAll("#" + containerId + " .toggle-opt").forEach(function(o){
+    o.classList.toggle("active", (o.dataset.val === "yes") === isYes);
+  });
+}
+function openTagSheet(existingItem, newImgDataUrl){
+  currentTagItemId = existingItem ? existingItem.id : null;
+  pendingImg = existingItem ? existingItem.img : newImgDataUrl;
+  document.getElementById("tag-preview").src = pendingImg || "";
+  document.getElementById("tag-sheet-title").textContent = existingItem ? t("edit_piece") : t("new_piece");
+  document.getElementById("f-name").value = existingItem ? existingItem.name : "";
+  document.getElementById("f-desc").value = existingItem ? (existingItem.desc || "") : "";
+  document.getElementById("f-color").value = existingItem ? existingItem.color : "";
+  setChipVal("f-category", existingItem ? existingItem.category : "top");
+  setMultiChips("f-formality", existingItem ? (existingItem.formalities || ["casual"]) : ["casual"]);
+  setChipVal("f-warmth", existingItem ? existingItem.warmth : 2);
+  setToggleVal("f-modest", existingItem ? !!existingItem.modest : false);
+  document.getElementById("btn-delete-item").style.display = existingItem ? "block" : "none";
+  document.getElementById("ai-badge").style.display = "none";
+  document.getElementById("tag-overlay").classList.add("show");
+}
+function closeTagSheet(){
+  document.getElementById("tag-overlay").classList.remove("show");
+  currentTagItemId = null;
+  pendingImg = null;
+}
+document.getElementById("tag-overlay").addEventListener("click", function(e){
+  if(e.target.id === "tag-overlay") closeTagSheet();
+});
+document.getElementById("btn-save-item").addEventListener("click", async function(){
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = t("saving_btn");
+
+  var name = document.getElementById("f-name").value.trim();
+  var desc = document.getElementById("f-desc").value.trim();
+  var color = document.getElementById("f-color").value.trim() || "neutral";
+  var category = getChipVal("f-category") || "top";
+  var formalities = getMultiChips("f-formality");
+  if(formalities.length === 0) formalities = ["casual"];
+  var warmth = parseInt(getChipVal("f-warmth") || "2", 10);
+  var modest = getToggleVal("f-modest");
+
+  setSavePill("", t("saving"));
+  try{
+    if(currentTagItemId){
+      var patch = { name: name, description: desc, color: color, category: category,
+                    formalities: formalities, warmth: warmth, modest: modest };
+      var upd = await sb.from("items").update(patch).eq("id", currentTagItemId).select().single();
+      if(upd.error) throw upd.error;
+      for(var i=0;i<items.length;i++){
+        if(items[i].id === currentTagItemId){ Object.assign(items[i], rowToItem(upd.data)); }
+      }
+    } else {
+      // create the row first to get an id, then upload the photo, then save its URL
+      var ins = await sb.from("items").insert({
+        name: name || (color + " " + category), description: desc, color: color,
+        category: category, formalities: formalities, warmth: warmth, modest: modest
+      }).select().single();
+      if(ins.error) throw ins.error;
+      var newItem = rowToItem(ins.data);
+      if(pendingImg){
+        var url = await uploadPhoto(newItem.id, pendingImg);
+        if(url){
+          await sb.from("items").update({image_url: url}).eq("id", newItem.id);
+          newItem.img = url;
+        }
+      }
+      items.push(newItem);
+    }
+    setSavePill("ok", fmt(t("saved_pill"), {n: items.length}));
+    renderCloset();
+    closeTagSheet();
+  }catch(err){
+    setSavePill("err", t("failed_pill"));
+    showToast(t("toast_savefail"));
+  }
+  btn.disabled = false;
+  btn.textContent = t("save_item");
+});
+document.getElementById("btn-delete-item").addEventListener("click", async function(){
+  var deadId = currentTagItemId;
+  try{
+    await sb.from("items").delete().eq("id", deadId);
+    await deletePhoto(deadId);
+  }catch(e){}
+  items = items.filter(function(i){ return i.id !== deadId; });
+  renderCloset();
+  closeTagSheet();
+  showToast(t("toast_removed"));
+});
+
+// ================= Style view chips =================
+function buildSelectChips(containerId, values, getSel, setSel){
+  var c = document.getElementById(containerId);
+  c.innerHTML = "";
+  values.forEach(function(v){
+    var chip = document.createElement("div");
+    chip.className = "chip" + (getSel() === v ? " active" : "");
+    chip.textContent = lbl(CHIP_MAP[containerId] || "", v);
+    chip.onclick = function(){
+      setSel(v);
+      c.querySelectorAll(".chip").forEach(function(x){ x.classList.remove("active"); });
+      chip.classList.add("active");
+    };
+    c.appendChild(chip);
+  });
+}
+// style chips are built in buildAllChips()
+document.querySelectorAll("#modest-toggle .toggle-opt").forEach(function(opt){
+  opt.onclick = function(){
+    opt.parentElement.querySelectorAll(".toggle-opt").forEach(function(o){ o.classList.remove("active"); });
+    opt.classList.add("active");
+    selModest = opt.dataset.val === "yes";
+  };
+});
+function buildCountChips(){
+  var c = document.getElementById("count-chips");
+  c.innerHTML = "";
+  [1,2,3].forEach(function(n){
+    var chip = document.createElement("div");
+    chip.className = "chip num" + (n === selCount ? " active" : "");
+    chip.textContent = n;
+    chip.onclick = function(){
+      selCount = n;
+      c.querySelectorAll(".chip").forEach(function(x){ x.classList.remove("active"); });
+      chip.classList.add("active");
+      document.getElementById("btn-generate").textContent = styleBtnLabel();
+    };
+    c.appendChild(chip);
+  });
+}
+function buildAllChips(){
+  buildSingleChips("f-category", CATEGORIES);
+  buildMultiChips("f-formality", FORMALITIES);
+  buildSingleChips("f-warmth", WARMTHS);
+  buildSelectChips("occasion-chips", OCCASIONS, function(){return selOccasion;}, function(v){selOccasion=v;});
+  buildSelectChips("weather-chips", WEATHERS, function(){return selWeather;}, function(v){selWeather=v;});
+  buildCountChips();
+}
+
+// ================= Outfit engine =================
+function matchLevel(it, wantF, tW){
+  var fMatch = it.formalities.some(function(f){ return wantF.indexOf(f) >= 0; });
+  var wMatch = (it.warmth === 0) || (Math.abs(it.warmth - tW) <= 1);
+  if(fMatch && wMatch) return 0;
+  if(fMatch) return 1;
+  if(wMatch) return 2;
+  return 3;
+}
+function recentItemSets(){
+  var cutoff = Date.now() - 14 * 24 * 3600 * 1000;
+  return history.filter(function(h){ return new Date(h.date).getTime() >= cutoff; })
+                .map(function(h){ return h.itemIds.slice().sort().join(","); });
+}
+function generateOutfits(count){
+  var wantF = FORMALITY_BY_OCCASION[selOccasion];
+  var tW = WARMTH_BY_WEATHER[selWeather];
+  var needsOuter = tW >= 3;
+  var recent = recentItemSets();
+
+  function pool(cat){
+    return items.filter(function(it){
+      if(it.category !== cat) return false;
+      if(!it.img) return false;
+      if(selModest && (cat === "top" || cat === "bottom" || cat === "dress") && !it.modest) return false;
+      return true;
+    }).map(function(it){
+      return { item: it, lvl: matchLevel(it, wantF, tW) };
+    }).filter(function(e){ return e.lvl <= 2; })
+      .sort(function(a,b){ return a.lvl - b.lvl; });
+  }
+
+  var dresses = pool("dress");
+  var tops = pool("top");
+  var bottoms = pool("bottom");
+  var shoes = pool("shoes");
+  var outer = pool("outerwear");
+  var accs = pool("accessory");
+  var hijabs = pool("hijab");
+
+  var combos = [];
+  function score(entries){
+    var s = 0;
+    entries.forEach(function(e){
+      s -= e.lvl * 3;
+      if(e.item.formalities.indexOf(wantF[0]) >= 0) s += 2;
+      s += (e.item.warmth === 0) ? 2 : (2 - Math.abs(e.item.warmth - tW));
+    });
+    return s + Math.random() * 0.8;
+  }
+  function pushCombo(coreEntries){
+    var shoeOpts = shoes.length ? shoes.slice(0, 4) : [null];
+    shoeOpts.forEach(function(sh){
+      var entries = coreEntries.slice();
+      if(sh) entries.push(sh);
+      if(needsOuter && outer.length){ entries.push(outer[0]); }
+      else if(!needsOuter && outer.length && outer[0].lvl === 0 && Math.random() > 0.6){ entries.push(outer[0]); }
+      if(accs.length && Math.random() > 0.45){
+        entries.push(accs[Math.floor(Math.random() * accs.length)]);
+      }
+      if(selModest && hijabs.length){
+        entries.push(hijabs[Math.floor(Math.random() * hijabs.length)]);
+      }
+      var ids = entries.map(function(e){ return e.item.id; }).sort().join(",");
+      if(recent.indexOf(ids) >= 0) return;
+      var maxLvl = 0;
+      entries.forEach(function(e){ if(e.lvl > maxLvl) maxLvl = e.lvl; });
+      combos.push({ entries: entries, key: ids, sc: score(entries), stretch: maxLvl > 0 });
+    });
+  }
+
+  dresses.forEach(function(d){ pushCombo([d]); });
+  tops.slice(0, 12).forEach(function(t){
+    bottoms.slice(0, 12).forEach(function(b){ pushCombo([t, b]); });
+  });
+
+  combos.sort(function(a,b){ return b.sc - a.sc; });
+  var picked = [];
+  var usedKeys = {};
+  var usedCores = {};
+  for(var i=0;i<combos.length;i++){
+    var c = combos[i];
+    if(usedKeys[c.key]) continue;
+    var coreKey = c.entries.filter(function(e){
+      var cat = e.item.category;
+      return cat === "top" || cat === "bottom" || cat === "dress";
+    }).map(function(e){ return e.item.id; }).sort().join(",");
+    if(usedCores[coreKey]) continue;
+    usedKeys[c.key] = true;
+    usedCores[coreKey] = true;
+    picked.push(c);
+    if(picked.length >= count) break;
+  }
+  if(picked.length < count){
+    for(var j=0;j<combos.length && picked.length < count;j++){
+      if(usedKeys[combos[j].key]) continue;
+      usedKeys[combos[j].key] = true;
+      picked.push(combos[j]);
+    }
+  }
+
+  function perfectCount(pl){ return pl.filter(function(e){ return e.lvl === 0; }).length; }
+  var missing = [];
+  var fLabel = wantF.map(function(f){ return lbl("form", f); }).join(" " + t("or") + " ");
+  if(perfectCount(dresses) === 0 && (perfectCount(tops) === 0 || perfectCount(bottoms) === 0)){
+    if(perfectCount(tops) === 0) missing.push(fmt(t("miss_top"), {f: fLabel, w: lbl("wea", selWeather)}));
+    if(perfectCount(bottoms) === 0) missing.push(fmt(t("miss_bottom"), {f: fLabel, w: lbl("wea", selWeather)}));
+  }
+  if(perfectCount(shoes) === 0) missing.push(fmt(t("miss_shoes"), {f: fLabel, s: lbl("occ", selOccasion)}));
+  if(needsOuter && perfectCount(outer) === 0) missing.push(fmt(t("miss_outer"), {w: lbl("wea", selWeather)}));
+  if(selModest){
+    var modestBody = items.filter(function(it){
+      return it.modest && (it.category === "top" || it.category === "bottom" || it.category === "dress");
+    });
+    if(modestBody.length < 2) missing.push(t("miss_modest"));
+    if(perfectCount(hijabs) === 0) missing.push(t("miss_hijab"));
+  }
+  return { picked: picked, missing: missing };
+}
+function localCaption(entries){
+  if(LANG === "ar"){
+    var names = entries.map(function(e){ return e.item.name; }).join("\u060c ");
+    return "\u0625\u0637\u0644\u0627\u0644\u0629 \u0627\u0644\u064a\u0648\u0645: " + names + ". " + (OCCASION_PHRASE_AR[selOccasion] || "");
+  }
+  var byCat = {};
+  entries.forEach(function(e){ byCat[e.item.category] = e.item; });
+  var core;
+  if(byCat.dress){
+    core = "your " + byCat.dress.color + " " + byCat.dress.name;
+  } else {
+    core = "your " + (byCat.top ? byCat.top.color + " " + byCat.top.name : "top") +
+           " with " + (byCat.bottom ? byCat.bottom.color + " " + byCat.bottom.name : "bottoms");
+  }
+  var s = "A look built around " + core;
+  if(byCat.outerwear) s += ", layered with the " + byCat.outerwear.name;
+  if(byCat.shoes) s += ", grounded by " + byCat.shoes.color + " " + byCat.shoes.name;
+  if(byCat.accessory) s += ", finished with the " + byCat.accessory.name;
+  return s + ". " + OCCASION_PHRASE[selOccasion];
+}
+async function aiCaptions(pickedCombos){
+  if(!apiKey) return null;
+  var looks = pickedCombos.map(function(c, idx){
+    return "Look " + (idx+1) + ": " + c.entries.map(function(e){
+      return e.item.color + " " + e.item.name + " (" + e.item.category + ")";
+    }).join(", ");
+  }).join("\n");
+  try{
+    var response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: aiHeaders(),
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: "You write short Pinterest/Instagram-style outfit captions. Occasion: " + selOccasion + ". Season: " + selWeather + "." + (selModest ? " Style is modest." : "") + "\n" + looks + "\nRespond with ONLY a JSON array of strings, one caption per look, in order, each 1-2 sentences, warm and aesthetic, mentioning the actual pieces. No markdown, no backticks." + (LANG === "ar" ? " Write the captions in Arabic." : "")
+        }]
+      })
+    });
+    var data = await response.json();
+    var text = "";
+    if(data && data.content){
+      for(var i=0;i<data.content.length;i++){
+        if(data.content[i].type === "text") text += data.content[i].text;
+      }
+    }
+    var clean = text.replace(/```json|```/g, "").trim();
+    var arr = JSON.parse(clean);
+    if(Array.isArray(arr)) return arr;
+    return null;
+  }catch(e){ return null; }
+}
+
+document.getElementById("btn-generate").addEventListener("click", async function(){
+  var btn = this;
+  var res = generateOutfits(selCount);
+  var results = document.getElementById("outfit-results");
+  results.innerHTML = "";
+
+  if(res.picked.length === 0){
+    results.innerHTML = '<div class="empty-state"><div class="glyph">\u2740</div>' + t("empty_gen") + '</div>';
+  }
+
+  var captionEls = [];
+  res.picked.forEach(function(combo, idx){
+    var card = document.createElement("div");
+    card.className = "outfit-card";
+    var photos = combo.entries.map(function(e){ return '<img src="' + e.item.img + '">'; }).join("");
+    var itemList = combo.entries.map(function(e){
+      return lbl("cat", e.item.category) + ": " + escapeHtml(e.item.color + " " + e.item.name);
+    }).join(" \u00B7 ");
+    var stretchTag = combo.stretch ? '<span class="stretch-note">' + t("closest") + '</span>' : "";
+    card.innerHTML =
+      '<div class="outfit-num"><span>' + fmt(t("look_of"), {i: idx+1, n: res.picked.length}) + '</span>' + stretchTag + '</div>' +
+      '<div class="outfit-photos">' + photos + '</div>' +
+      '<div class="outfit-caption"><span class="spinner-caption">' + t("writing") + '</span></div>' +
+      '<div class="outfit-items">' + itemList + '</div>' +
+      '<button class="wear-btn">' + t("wear") + '</button>';
+    results.appendChild(card);
+    captionEls.push(card.querySelector(".outfit-caption"));
+
+    card.querySelector(".wear-btn").addEventListener("click", async function(e){
+      var ids = combo.entries.map(function(en){ return en.item.id; });
+      try{
+        var ins = await sb.from("history").insert({
+          occasion: selOccasion, weather: selWeather, modest: selModest, item_ids: ids
+        }).select().single();
+        var row = ins.data;
+        history.unshift({
+          id: row ? row.id : genId(), date: row ? row.worn_at : new Date().toISOString(),
+          occasion: selOccasion, weather: selWeather, modest: selModest, itemIds: ids
+        });
+      }catch(err){
+        history.unshift({ id: genId(), date: new Date().toISOString(),
+          occasion: selOccasion, weather: selWeather, modest: selModest, itemIds: ids });
+      }
+      renderHistory();
+      e.target.disabled = true;
+      e.target.textContent = t("logged");
+      showToast(t("toast_hist"));
+    });
+  });
+
+  if(res.missing.length){
+    var box = document.createElement("div");
+    box.className = "missing-box";
+    box.innerHTML = '<div class="h">' + t("missing_h") + '</div><ul>' +
+      res.missing.map(function(m){ return "<li>" + escapeHtml(m) + "</li>"; }).join("") + "</ul>";
+    results.appendChild(box);
+  }
+
+  if(res.picked.length > 0){
+    btn.disabled = true;
+    btn.textContent = t("styling");
+    var caps = await aiCaptions(res.picked);
+    res.picked.forEach(function(combo, idx){
+      var text = (caps && caps[idx]) ? caps[idx] : localCaption(combo.entries);
+      captionEls[idx].textContent = text;
+    });
+    btn.disabled = false;
+    btn.textContent = styleBtnLabel();
+  }
+});
+
+// ================= History =================
+function renderHistory(){
+  var list = document.getElementById("history-list");
+  list.innerHTML = "";
+  var cutoff = Date.now() - 14 * 24 * 3600 * 1000;
+  var recent = history.filter(function(h){ return new Date(h.date).getTime() >= cutoff; })
+                      .sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+  if(recent.length === 0){
+    list.innerHTML = '<div class="empty-state"><div class="glyph">\u2740</div>' + t("empty_hist") + '</div>';
+    return;
+  }
+  recent.forEach(function(h){
+    var thumbs = h.itemIds.map(function(id){
+      var it = null;
+      for(var i=0;i<items.length;i++){ if(items[i].id === id){ it = items[i]; break; } }
+      return (it && it.img) ? '<img src="' + it.img + '">' : "";
+    }).join("");
+    var d = new Date(h.date);
+    var entry = document.createElement("div");
+    entry.className = "hist-entry";
+    entry.innerHTML =
+      '<div class="hist-thumbs">' + thumbs + '</div>' +
+      '<div class="hist-meta">' +
+        '<div class="hist-occ">' + lbl("occ", h.occasion) + ' \u00B7 ' + lbl("wea", h.weather) + (h.modest ? ' \u00B7 ' + t("modest") : '') + '</div>' +
+        '<div class="hist-date">' + d.toLocaleDateString(undefined, {month:"short", day:"numeric"}) + '</div>' +
+      '</div>';
+    list.appendChild(entry);
+  });
+}
+
+// ================= Account panel (replaces closet list) =================
+function renderClosetList(){
+  var list = document.getElementById("closet-list");
+  if(!list) return;
+  list.innerHTML = "";
+  var row = document.createElement("div");
+  row.className = "hist-entry";
+  row.innerHTML =
+    '<div class="hist-meta">' +
+      '<div class="hist-occ" style="text-transform:none;">' + (currentUser ? escapeHtml(currentUser.email) : "") + '</div>' +
+      '<div class="hist-date">' + fmt(t("saved_pill"), {n: items.length}) + '</div>' +
+    '</div>' +
+    '<div style="width:10px;height:10px;border-radius:50%;background:var(--rose);"></div>';
+  list.appendChild(row);
+}
+// repurpose the "new closet" button as Log out
+(function(){
+  var b = document.getElementById("btn-new-closet");
+  if(b){
+    b.setAttribute("data-i18n", "logout");
+    b.textContent = t("logout");
+    b.onclick = async function(){
+      await sb.auth.signOut();
+      location.reload();
+    };
+  }
+})();
+
+// ================= Auth =================
+var authMode = "login"; // or "signup"
+function setAuthErr(msg){
+  var e = document.getElementById("auth-err");
+  if(!msg){ e.style.display = "none"; return; }
+  e.textContent = msg; e.style.display = "block";
+}
+function refreshAuthLabels(){
+  document.getElementById("auth-go").textContent = authMode === "login" ? t("auth_login") : t("auth_signup");
+  document.getElementById("auth-toggle").textContent = authMode === "login" ? t("auth_toswitch_signup") : t("auth_toswitch_login");
+  var sub = document.getElementById("auth-sub");
+  if(sub) sub.textContent = t("auth_sub");
+}
+document.getElementById("auth-toggle").addEventListener("click", function(){
+  authMode = (authMode === "login") ? "signup" : "login";
+  setAuthErr("");
+  refreshAuthLabels();
+});
+document.getElementById("auth-go").addEventListener("click", async function(){
+  var btn = this;
+  var email = document.getElementById("auth-email").value.trim();
+  var pass = document.getElementById("auth-pass").value;
+  if(!email || !pass){ setAuthErr(t("auth_needfields")); return; }
+  if(authMode === "signup" && pass.length < 6){ setAuthErr(t("auth_weak")); return; }
+  setAuthErr("");
+  btn.disabled = true; btn.textContent = "…";
+  try{
+    var res;
+    if(authMode === "signup"){
+      res = await sb.auth.signUp({ email: email, password: pass });
+    } else {
+      res = await sb.auth.signInWithPassword({ email: email, password: pass });
+    }
+    if(res.error){
+      var m = (res.error.message || "").toLowerCase();
+      if(m.indexOf("already") >= 0 || m.indexOf("registered") >= 0) setAuthErr(t("auth_exists"));
+      else if(m.indexOf("invalid") >= 0 || m.indexOf("credential") >= 0) setAuthErr(t("auth_bad"));
+      else if(m.indexOf("6 char") >= 0 || m.indexOf("weak") >= 0 || m.indexOf("least") >= 0) setAuthErr(t("auth_weak"));
+      else setAuthErr(res.error.message || t("auth_generic"));
+      btn.disabled = false; refreshAuthLabels();
+      return;
+    }
+    if(res.data && res.data.session && res.data.user){
+      await onSignedIn(res.data.user);
+    } else {
+      // email confirmation is ON; try an immediate sign-in
+      var si = await sb.auth.signInWithPassword({ email: email, password: pass });
+      if(si.data && si.data.user){ await onSignedIn(si.data.user); }
+      else { setAuthErr(t("auth_generic")); btn.disabled = false; refreshAuthLabels(); }
+    }
+  }catch(err){
+    setAuthErr(t("auth_generic"));
+    btn.disabled = false; refreshAuthLabels();
+  }
+});
+
+async function onSignedIn(user){
+  currentUser = user;
+  apiKey = lsGet("rack_apikey") || "";
+  var kf = document.getElementById("f-apikey");
+  if(kf && apiKey) kf.value = apiKey;
+  document.getElementById("auth-overlay").classList.remove("show");
+  document.getElementById("auth-overlay").style.display = "none";
+  // language: cloud profile wins, else local pick, else ask
+  var cloudLang = await loadLangFromCloud();
+  if(cloudLang === "ar" || cloudLang === "en"){
+    applyLanguage(cloudLang);
+  } else {
+    var localLang = lsGet("rack_lang");
+    if(localLang === "ar" || localLang === "en"){
+      applyLanguage(localLang);
+      await saveLangToCloud(localLang);
+    } else {
+      applyLanguage("en");
+      document.getElementById("lang-overlay").classList.add("show");
+    }
+  }
+  await loadCloset();
+  applyLanguage(LANG);
+}
+
+// ================= Init =================
+document.getElementById("lang-pick-en").addEventListener("click", function(){ chooseLang("en"); });
+document.getElementById("lang-pick-ar").addEventListener("click", function(){ chooseLang("ar"); });
+document.getElementById("lang-sw-en").addEventListener("click", function(){ chooseLang("en"); });
+document.getElementById("lang-sw-ar").addEventListener("click", function(){ chooseLang("ar"); });
+
+(async function start(){
+  // paint interface language early from the local hint (avoids flash)
+  var hint = lsGet("rack_lang");
+  applyLanguage((hint === "ar" || hint === "en") ? hint : "en");
+  refreshAuthLabels();
+
+  var sess = await sb.auth.getSession();
+  if(sess.data && sess.data.session && sess.data.session.user){
+    await onSignedIn(sess.data.session.user);
+  } else {
+    document.getElementById("auth-overlay").classList.add("show");
+  }
+})();
+
+})();
+</script>
+</body>
+</html>
