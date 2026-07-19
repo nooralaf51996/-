@@ -1434,6 +1434,13 @@ function recentItemSets(){
   return history.filter(function(h){ return new Date(h.date).getTime() >= cutoff; })
                 .map(function(h){ return h.itemIds.slice().sort().join(","); });
 }
+function looksPatterned(it){
+  if(it.patterned) return true;
+  var hay = ((it.name||"") + " " + (it.desc||"") + " " + (it.color||"")).toLowerCase();
+  var words = ["pattern","print","printed","floral","flower","stripe","striped","check","checked","checker","plaid","gingham","polka","dot","animal","leopard","zebra","snake","graphic","paisley","tartan","houndstooth","camo","tie-dye","tie dye","geometric","argyle"];
+  for(var i=0;i<words.length;i++){ if(hay.indexOf(words[i]) >= 0) return true; }
+  return false;
+}
 function generateOutfits(count){
   var wantF = FORMALITY_BY_OCCASION[selOccasion];
   var tW = WARMTH_BY_WEATHER[selWeather];
@@ -1486,7 +1493,7 @@ function generateOutfits(count){
       var ids = entries.map(function(e){ return e.item.id; }).sort().join(",");
       if(recent.indexOf(ids) >= 0) return;
       var patternCount = 0;
-      entries.forEach(function(e){ if(e.item.patterned) patternCount++; });
+      entries.forEach(function(e){ if(looksPatterned(e.item)) patternCount++; });
       if(patternCount > 1) return; // never stack pattern on pattern
       var maxLvl = 0;
       entries.forEach(function(e){ if(e.lvl > maxLvl) maxLvl = e.lvl; });
