@@ -527,7 +527,7 @@ html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
       </div>
 
       <div class="section-label" data-i18n="lang_label">Language / \u0627\u0644\u0644\u063a\u0629</div>
-      <div class="share-box"><div class="chip-row"><div class="chip" id="lang-sw-en">English \u00b7 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629</div><div class="chip" id="lang-sw-ar">\u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u00b7 Arabic</div></div></div>
+      <div class="share-box"><div class="chip-row"><div class="chip" id="lang-sw-en">English</div><div class="chip" id="lang-sw-ar">\u0627\u0644\u0639\u0631\u0628\u064a\u0629</div></div></div>
 
       <div class="section-label" data-i18n="your_closets_label">Your closets</div>
       <div id="closet-list"></div>
@@ -596,6 +596,11 @@ html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
         <div class="toggle-opt active" data-val="no" data-i18n="standard">Standard</div>
         <div class="toggle-opt" data-val="yes" data-i18n="modest">Modest</div>
       </div>
+      <div class="field-label" data-i18n="pattern_l">Pattern</div>
+      <div class="toggle-row" id="f-pattern">
+        <div class="toggle-opt active" data-val="no" data-i18n="solid">Solid</div>
+        <div class="toggle-opt" data-val="yes" data-i18n="patterned">Patterned</div>
+      </div>
       <button class="btn-primary" id="btn-save-item" data-i18n="save_item">Save to closet</button>
       <button class="btn-secondary" id="btn-delete-item" style="display:none;color:#B5533C;border-color:#e6c8b8;" data-i18n="delete_item">Remove from closet</button>
     </div>
@@ -618,8 +623,8 @@ html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
   <div class="overlay" id="lang-overlay" style="align-items:center;justify-content:center;z-index:200;">
     <div class="sheet" style="border-radius:20px;max-width:320px;margin:0 20px;padding-bottom:24px;">
       <h3 style="text-align:center;">\u0627\u062e\u062a\u0627\u0631\u064a \u0644\u063a\u062a\u0643<br><span style="font-family:'Inter';font-size:14px;font-weight:500;">Choose your language</span></h3>
-      <button class="btn-primary" id="lang-pick-ar" style="margin-top:4px;">\u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u00b7 Arabic</button>
-      <button class="btn-secondary" id="lang-pick-en">English \u00b7 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629</button>
+      <button class="btn-primary" id="lang-pick-ar" style="margin-top:4px;">\u0627\u0644\u0639\u0631\u0628\u064a\u0629</button>
+      <button class="btn-secondary" id="lang-pick-en">English</button>
     </div>
   </div>
 
@@ -641,7 +646,7 @@ en: {
   hist_label: "Last 14 days", cur_closet_label: "Your account", your_closets_label: "Account", ai_label: "AI auto-tagging",
   any: "Any", modest: "Modest", standard: "Standard",
   name_l: "Name", desc_l: "Description", cat_l: "Category", color_l: "Color",
-  form_l: "Formality \u2014 pick all that apply", warm_l: "Warmth", cover_l: "Coverage",
+  form_l: "Formality \u2014 pick all that apply", warm_l: "Warmth", cover_l: "Coverage", pattern_l: "Pattern", solid: "Solid", patterned: "Patterned",
   ph_name: "e.g. Blush satin blouse", ph_desc: "A little Pinterest-style caption \u2014 AI writes this for you", ph_color: "e.g. blush, ivory, black",
   new_piece: "New piece", edit_piece: "Edit piece", add_piece: "Add a piece", add_tile: "Add a piece",
   take_photo: "\ud83d\udcf7 &nbsp;Take a photo", choose_lib: "\ud83d\uddbc &nbsp;Choose from library",
@@ -686,7 +691,7 @@ ar: {
   hist_label: "\u0622\u062e\u0631 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627", cur_closet_label: "\u062d\u0633\u0627\u0628\u0643", your_closets_label: "\u0627\u0644\u062d\u0633\u0627\u0628", ai_label: "\u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u0627\u0644\u0630\u0643\u064a",
   any: "\u0627\u0644\u0643\u0644", modest: "\u0645\u062d\u062a\u0634\u0645", standard: "\u0639\u0627\u062f\u064a",
   name_l: "\u0627\u0644\u0627\u0633\u0645", desc_l: "\u0627\u0644\u0648\u0635\u0641", cat_l: "\u0627\u0644\u0641\u0626\u0629", color_l: "\u0627\u0644\u0644\u0648\u0646",
-  form_l: "\u0627\u0644\u0631\u0633\u0645\u064a\u0629 \u2014 \u0627\u062e\u062a\u0627\u0631\u064a \u0643\u0644 \u0645\u0627 \u064a\u0646\u0637\u0628\u0642", warm_l: "\u0627\u0644\u062f\u0641\u0621", cover_l: "\u0627\u0644\u062a\u063a\u0637\u064a\u0629",
+  form_l: "\u0627\u0644\u0631\u0633\u0645\u064a\u0629 \u2014 \u0627\u062e\u062a\u0627\u0631\u064a \u0643\u0644 \u0645\u0627 \u064a\u0646\u0637\u0628\u0642", warm_l: "\u0627\u0644\u062f\u0641\u0621", cover_l: "\u0627\u0644\u062a\u063a\u0637\u064a\u0629", pattern_l: "\u0627\u0644\u0646\u0642\u0634\u0629", solid: "\u0633\u0627\u062f\u0629", patterned: "\u0645\u0646\u0642\u0648\u0634",
   ph_name: "\u0645\u062b\u0627\u0644: \u0628\u0644\u0648\u0632\u0629 \u0633\u0627\u062a\u0627\u0646 \u0648\u0631\u062f\u064a\u0629", ph_desc: "\u0648\u0635\u0641 \u0642\u0635\u064a\u0631 \u0628\u0633\u062a\u0627\u064a\u0644 \u0628\u0646\u062a\u0631\u0633\u062a \u2014 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u064a\u0643\u062a\u0628\u0647 \u0644\u0643", ph_color: "\u0645\u062b\u0627\u0644: \u0648\u0631\u062f\u064a\u060c \u0639\u0627\u062c\u064a\u060c \u0623\u0633\u0648\u062f",
   new_piece: "\u0642\u0637\u0639\u0629 \u062c\u062f\u064a\u062f\u0629", edit_piece: "\u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0642\u0637\u0639\u0629", add_piece: "\u0623\u0636\u064a\u0641\u064a \u0642\u0637\u0639\u0629", add_tile: "\u0623\u0636\u064a\u0641\u064a \u0642\u0637\u0639\u0629",
   take_photo: "\ud83d\udcf7 &nbsp;\u0627\u0644\u062a\u0642\u0637\u064a \u0635\u0648\u0631\u0629", choose_lib: "\ud83d\uddbc &nbsp;\u0627\u062e\u062a\u0627\u0631\u064a \u0645\u0646 \u0627\u0644\u0635\u0648\u0631",
@@ -916,6 +921,7 @@ var items = [];
 var history = [];
 var currentTagItemId = null;
 var pendingImg = null;
+var pendingPatterned = false;
 var selOccasion = "friends";
 var selWeather = "summer";
 var selModest = false;
@@ -988,7 +994,7 @@ function rowToItem(r){
     category: r.category || "top", color: r.color || "neutral",
     formalities: (r.formalities && r.formalities.length) ? r.formalities : ["casual"],
     warmth: (r.warmth === null || r.warmth === undefined) ? 2 : r.warmth,
-    modest: !!r.modest, img: r.image_url || "", createdAt: r.created_at
+    modest: !!r.modest, patterned: !!r.patterned, img: r.image_url || "", createdAt: r.created_at
   };
 }
 async function loadLangFromCloud(){
@@ -1124,7 +1130,7 @@ async function analyzeWithAI(dataUrl){
           role: "user",
           content: [
             { type: "image", source: { type: "base64", media_type: "image/jpeg", data: base64 } },
-            { type: "text", text: "You are tagging one clothing item for a wardrobe app. Look at the photo and respond with ONLY a JSON object, no markdown, no backticks, no other text. Schema: {\"name\": short catchy item name max 4 words, \"desc\": a 1-2 sentence Pinterest/Instagram-style description of this piece, warm and aesthetic, mentioning fabric feel, vibe, and what it pairs with, \"category\": one of top|bottom|dress|outerwear|shoes|accessory|hijab (use hijab for a headscarf/veil), \"color\": main color one or two words, \"formalities\": array with EVERY level this piece can be worn at, from casual|smart|formal|sporty (e.g. dark jeans could be [\"casual\",\"smart\"]), \"warmth\": 0 if suitable for all seasons (e.g. a basic tee, plain jeans, sneakers) else 1 for light/summer fabric 2 for medium 3 for warm/winter, \"modest\": true if high coverage (long sleeves, high neckline, loose fit, or covers knees and shoulders) else false}. If the photo is not clothing, still guess the closest match." + (LANG === "ar" ? " Write the name and desc values in Arabic." : "") }
+            { type: "text", text: "You are tagging one clothing item for a wardrobe app. Look at the photo and respond with ONLY a JSON object, no markdown, no backticks, no other text. Schema: {\"name\": short catchy item name max 4 words, \"desc\": a 1-2 sentence Pinterest/Instagram-style description of this piece, warm and aesthetic, mentioning fabric feel, vibe, and what it pairs with, \"category\": one of top|bottom|dress|outerwear|shoes|accessory|hijab (use hijab for a headscarf/veil), \"color\": main color one or two words, \"formalities\": array with EVERY level this piece can be worn at, from casual|smart|formal|sporty (e.g. dark jeans could be [\"casual\",\"smart\"]), \"warmth\": 0 if suitable for all seasons (e.g. a basic tee, plain jeans, sneakers) else 1 for light/summer fabric 2 for medium 3 for warm/winter, \"patterned\": true if the item has a bold print/pattern (floral, stripes, checks, animal print, graphic) or false if it is solid/plain, \"modest\": true if high coverage (long sleeves, high neckline, loose fit, or covers knees and shoulders) else false}. If the photo is not clothing, still guess the closest match." + (LANG === "ar" ? " Write the name and desc values in Arabic." : "") }
           ]
         }]
       })
@@ -1151,6 +1157,8 @@ async function analyzeWithAI(dataUrl){
       }
       var w = parseInt(parsed.warmth);
       if(w >= 0 && w <= 3) setChipVal("f-warmth", w);
+      pendingPatterned = !!parsed.patterned;
+      setToggleVal("f-pattern", pendingPatterned);
       setToggleVal("f-modest", !!parsed.modest);
       badgeText.textContent = t("ai_tagged");
       badge.querySelector(".pulse").style.animation = "none";
@@ -1238,7 +1246,7 @@ function buildMultiChips(containerId, values){
   });
 }
 // tag-sheet chips are built in buildAllChips()
-document.querySelectorAll("#f-modest .toggle-opt").forEach(function(opt){
+document.querySelectorAll("#f-modest .toggle-opt, #f-pattern .toggle-opt").forEach(function(opt){
   opt.onclick = function(){
     opt.parentElement.querySelectorAll(".toggle-opt").forEach(function(o){ o.classList.remove("active"); });
     opt.classList.add("active");
@@ -1286,6 +1294,7 @@ function openTagSheet(existingItem, newImgDataUrl){
   setMultiChips("f-formality", existingItem ? (existingItem.formalities || ["casual"]) : ["casual"]);
   setChipVal("f-warmth", existingItem ? existingItem.warmth : 2);
   setToggleVal("f-modest", existingItem ? !!existingItem.modest : false);
+  setToggleVal("f-pattern", existingItem ? !!existingItem.patterned : false);
   document.getElementById("btn-delete-item").style.display = existingItem ? "block" : "none";
   document.getElementById("ai-badge").style.display = "none";
   document.getElementById("tag-overlay").classList.add("show");
@@ -1311,12 +1320,13 @@ document.getElementById("btn-save-item").addEventListener("click", async functio
   if(formalities.length === 0) formalities = ["casual"];
   var warmth = parseInt(getChipVal("f-warmth") || "2", 10);
   var modest = getToggleVal("f-modest");
+  var patterned = getToggleVal("f-pattern");
 
   setSavePill("", t("saving"));
   try{
     if(currentTagItemId){
       var patch = { name: name, description: desc, color: color, category: category,
-                    formalities: formalities, warmth: warmth, modest: modest };
+                    formalities: formalities, warmth: warmth, modest: modest, patterned: patterned };
       var upd = await sb.from("items").update(patch).eq("id", currentTagItemId).select().single();
       if(upd.error) throw upd.error;
       for(var i=0;i<items.length;i++){
@@ -1326,7 +1336,7 @@ document.getElementById("btn-save-item").addEventListener("click", async functio
       // create the row first to get an id, then upload the photo, then save its URL
       var ins = await sb.from("items").insert({
         name: name || (color + " " + category), description: desc, color: color,
-        category: category, formalities: formalities, warmth: warmth, modest: modest
+        category: category, formalities: formalities, warmth: warmth, modest: modest, patterned: patterned
       }).select().single();
       if(ins.error) throw ins.error;
       var newItem = rowToItem(ins.data);
@@ -1475,6 +1485,9 @@ function generateOutfits(count){
       }
       var ids = entries.map(function(e){ return e.item.id; }).sort().join(",");
       if(recent.indexOf(ids) >= 0) return;
+      var patternCount = 0;
+      entries.forEach(function(e){ if(e.item.patterned) patternCount++; });
+      if(patternCount > 1) return; // never stack pattern on pattern
       var maxLvl = 0;
       entries.forEach(function(e){ if(e.lvl > maxLvl) maxLvl = e.lvl; });
       combos.push({ entries: entries, key: ids, sc: score(entries), stretch: maxLvl > 0 });
@@ -1565,7 +1578,7 @@ async function aiCaptions(pickedCombos){
         max_tokens: 1000,
         messages: [{
           role: "user",
-          content: "You write short Pinterest/Instagram-style outfit captions. Occasion: " + selOccasion + ". Season: " + selWeather + "." + (selModest ? " Style is modest." : "") + "\n" + looks + "\nRespond with ONLY a JSON array of strings, one caption per look, in order, each 1-2 sentences, warm and aesthetic, mentioning the actual pieces. No markdown, no backticks." + (LANG === "ar" ? " Write the captions in Arabic." : "")
+          content: "You are a Pinterest fashion stylist. Draw on popular Pinterest outfit-inspiration aesthetics (clean girl, old money, streetstyle, cottagecore, minimalist, etc. \u2014 whatever fits) and write short Pinterest-style outfit captions that feel like a saved pin. Occasion: " + selOccasion + ". Season: " + selWeather + "." + (selModest ? " Style is modest." : "") + "\n" + looks + "\nRespond with ONLY a JSON array of strings, one caption per look, in order, each 1-2 sentences, warm and aesthetic, mentioning the actual pieces. No markdown, no backticks." + (LANG === "ar" ? " Write the captions in Arabic." : "")
         }]
       })
     });
