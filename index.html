@@ -322,6 +322,10 @@ textarea.text-input{resize:none;font-family:'Inter';}
   cursor:pointer;
 }
 .wear-btn:disabled{background:#c9b0b6;}
+.fb-row{display:inline-flex;gap:8px;margin-inline-start:10px;vertical-align:middle;}
+.fb-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);font-size:15px;cursor:pointer;}
+.fb-btn.on{background:var(--mauve);border-color:var(--mauve);}
+.fb-btn:disabled{opacity:0.55;}
 
 .missing-box{
   margin-top:18px;
@@ -571,6 +575,7 @@ html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
       <h3 data-i18n="add_piece">Add a piece</h3>
       <button class="btn-primary" id="btn-src-camera" style="margin-top:4px;" data-i18n="take_photo">📷 &nbsp;Take a photo</button>
       <button class="btn-secondary" id="btn-src-library" data-i18n="choose_lib">🖼 &nbsp;Choose from library</button>
+      <div class="hint" data-i18n="tip_photo" style="margin-top:12px;text-align:center;">Tip: clear photos help the AI style you better.</div>
     </div>
   </div>
 
@@ -669,7 +674,7 @@ en: {
   empty_hist: "Nothing worn yet. Outfits you log stay here for two weeks so Rack never repeats them.",
   empty_gen: "Not enough usable pieces for this combination yet \u2014 add a top, bottoms and shoes (or a dress and shoes) and try again.",
   loading: "loading\u2026", saving: "saving\u2026", saved_pill: "{n} pieces \u2713 saved", failed_pill: "save failed!",
-  toast_saved: "Saved to closet", toast_removed: "Removed", toast_hist: "Saved to your 14-day history",
+  toast_saved: "Saved to closet", toast_removed: "Removed", toast_hist: "Saved to your 14-day history", toast_fb_up: "Noted \u2014 more looks like this", toast_fb_down: "Noted \u2014 fewer looks like this", tip_photo: "Tip: clear photos help the AI style you better \u2014 one piece, laid flat, good light.",
   toast_new_closet: "New closet {id} ready", toast_opened: "Opened closet {id}",
   toast_savefail: "Save failed \u2014 free up device storage and try again", toast_photo: "Could not read that photo",
   ai_looking: "AI is looking\u2026", ai_tagged: "AI tagged \u2713 review below", ai_unavail: "AI unavailable \u2014 tag manually",
@@ -714,7 +719,7 @@ ar: {
   empty_hist: "\u0644\u0645 \u062a\u0633\u062c\u0651\u0644\u064a \u0623\u064a \u0625\u0637\u0644\u0627\u0644\u0629 \u0628\u0639\u062f. \u0627\u0644\u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0627\u0644\u062a\u064a \u062a\u0633\u062c\u0644\u064a\u0646\u0647\u0627 \u062a\u0628\u0642\u0649 \u0647\u0646\u0627 \u0623\u0633\u0628\u0648\u0639\u064a\u0646 \u062d\u062a\u0649 \u0644\u0627 \u062a\u062a\u0643\u0631\u0631.",
   empty_gen: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0642\u0637\u0639 \u0643\u0627\u0641\u064a\u0629 \u0644\u0647\u0630\u0647 \u0627\u0644\u062a\u0631\u0643\u064a\u0628\u0629 \u0628\u0639\u062f \u2014 \u0623\u0636\u064a\u0641\u064a \u062a\u0648\u0628\u064b\u0627 \u0648\u0642\u0637\u0639\u0629 \u0633\u0641\u0644\u064a\u0629 \u0648\u062d\u0630\u0627\u0621\u064b (\u0623\u0648 \u0641\u0633\u062a\u0627\u0646\u064b\u0627 \u0648\u062d\u0630\u0627\u0621\u064b) \u0648\u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627.",
   loading: "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644\u2026", saving: "\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0641\u0638\u2026", saved_pill: "{n} \u0642\u0637\u0639\u0629 \u2713 \u0645\u062d\u0641\u0648\u0638\u0629", failed_pill: "\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638!",
-  toast_saved: "\u062a\u0645 \u0627\u0644\u062d\u0641\u0638 \u0641\u064a \u0627\u0644\u062e\u0632\u0627\u0646\u0629", toast_removed: "\u062a\u0645 \u0627\u0644\u062d\u0630\u0641", toast_hist: "\u062d\u064f\u0641\u0638\u062a \u0641\u064a \u0633\u062c\u0644 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627",
+  toast_saved: "\u062a\u0645 \u0627\u0644\u062d\u0641\u0638 \u0641\u064a \u0627\u0644\u062e\u0632\u0627\u0646\u0629", toast_removed: "\u062a\u0645 \u0627\u0644\u062d\u0630\u0641", toast_hist: "\u062d\u064f\u0641\u0638\u062a \u0641\u064a \u0633\u062c\u0644 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627", toast_fb_up: "\u062a\u0645 \u2014 \u0627\u0644\u0645\u0632\u064a\u062f \u0645\u0646 \u0627\u0644\u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0627\u0644\u0645\u0634\u0627\u0628\u0647\u0629", toast_fb_down: "\u062a\u0645 \u2014 \u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0623\u0642\u0644 \u0645\u0646 \u0647\u0630\u0627 \u0627\u0644\u0646\u0648\u0639", tip_photo: "\u0646\u0635\u064a\u062d\u0629: \u0627\u0644\u0635\u0648\u0631 \u0627\u0644\u0648\u0627\u0636\u062d\u0629 \u062a\u0633\u0627\u0639\u062f \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0639\u0644\u0649 \u062a\u0646\u0633\u064a\u0642\u0643 \u0628\u0634\u0643\u0644 \u0623\u0641\u0636\u0644 \u2014 \u0642\u0637\u0639\u0629 \u0648\u0627\u062d\u062f\u0629\u060c \u0645\u0641\u0631\u0648\u062f\u0629\u060c \u0628\u0625\u0636\u0627\u0621\u0629 \u062c\u064a\u062f\u0629.",
   toast_new_closet: "\u0627\u0644\u062e\u0632\u0627\u0646\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629 {id} \u062c\u0627\u0647\u0632\u0629", toast_opened: "\u0641\u064f\u062a\u062d\u062a \u0627\u0644\u062e\u0632\u0627\u0646\u0629 {id}",
   toast_savefail: "\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638 \u2014 \u062a\u062d\u0642\u0642\u064a \u0648\u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627", toast_photo: "\u062a\u0639\u0630\u0651\u0631\u062a \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0635\u0648\u0631\u0629",
   ai_looking: "\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u064a\u0641\u062d\u0635\u2026", ai_tagged: "\u062a\u0645 \u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u2713 \u0631\u0627\u062c\u0639\u064a \u0628\u0627\u0644\u0623\u0633\u0641\u0644", ai_unavail: "\u063a\u064a\u0631 \u0645\u062a\u0627\u062d \u2014 \u0635\u0646\u0651\u0641\u064a \u064a\u062f\u0648\u064a\u064b\u0627",
@@ -927,6 +932,8 @@ var history = [];
 var currentTagItemId = null;
 var pendingImg = null;
 var pendingPatterned = false;
+var pendingColorRole = "";
+var pendingFit = "";
 var selOccasion = "friends";
 var selWeather = "summer";
 var selModest = false;
@@ -1000,7 +1007,7 @@ function rowToItem(r){
     category: r.category || "top", color: r.color || "neutral",
     formalities: (r.formalities && r.formalities.length) ? r.formalities : ["casual"],
     warmth: (r.warmth === null || r.warmth === undefined) ? 2 : r.warmth,
-    modest: !!r.modest, patterned: !!r.patterned, img: r.image_url || "", createdAt: r.created_at
+    modest: !!r.modest, patterned: !!r.patterned, colorRole: r.color_role || "", fit: r.fit || "", img: r.image_url || "", createdAt: r.created_at
   };
 }
 async function loadLangFromCloud(){
@@ -1136,7 +1143,7 @@ async function analyzeWithAI(dataUrl){
           role: "user",
           content: [
             { type: "image", source: { type: "base64", media_type: "image/jpeg", data: base64 } },
-            { type: "text", text: "You are tagging one clothing item for a wardrobe app. Look at the photo and respond with ONLY a JSON object, no markdown, no backticks, no other text. Schema: {\"name\": short catchy item name max 4 words, \"desc\": a 1-2 sentence Pinterest/Instagram-style description of this piece, warm and aesthetic, mentioning fabric feel, vibe, and what it pairs with, \"category\": one of top|bottom|dress|outerwear|shoes|accessory|hijab (use hijab for a headscarf/veil), \"color\": main color one or two words, \"formalities\": array with EVERY level this piece can be worn at, from casual|smart|formal|sporty (e.g. dark jeans could be [\"casual\",\"smart\"]), \"warmth\": 0 if suitable for all seasons (e.g. a basic tee, plain jeans, sneakers) else 1 for light/summer fabric 2 for medium 3 for warm/winter, \"patterned\": true if the item has a bold print/pattern (floral, stripes, checks, animal print, graphic) or false if it is solid/plain, \"modest\": true if high coverage (long sleeves, high neckline, loose fit, or covers knees and shoulders) else false}. If the photo is not clothing, still guess the closest match." + (LANG === "ar" ? " Write the name and desc values in Arabic." : "") }
+            { type: "text", text: "You are tagging one clothing item for a wardrobe app. Look at the photo and respond with ONLY a JSON object, no markdown, no backticks, no other text. Schema: {\"name\": short catchy item name max 4 words, \"desc\": a 1-2 sentence Pinterest/Instagram-style description of this piece, warm and aesthetic, mentioning fabric feel, vibe, and what it pairs with, \"category\": one of top|bottom|dress|outerwear|shoes|accessory|hijab (use hijab for a headscarf/veil), \"color\": main color one or two words, \"formalities\": array with EVERY level this piece can be worn at, from casual|smart|formal|sporty (e.g. dark jeans could be [\"casual\",\"smart\"]), \"warmth\": 0 if suitable for all seasons (e.g. a basic tee, plain jeans, sneakers) else 1 for light/summer fabric 2 for medium 3 for warm/winter, \"patterned\": true if the item has a bold print/pattern (floral, stripes, checks, animal print, graphic) or false if it is solid/plain, \"color_role\": \"neutral\" if the main color is black/white/cream/beige/grey/navy/denim/brown else \"accent\", \"fit\": one of fitted|regular|relaxed based on the cut, \"modest\": true if high coverage (long sleeves, high neckline, loose fit, or covers knees and shoulders) else false}. If the photo is not clothing, still guess the closest match." + (LANG === "ar" ? " Write the name and desc values in Arabic." : "") }
           ]
         }]
       })
@@ -1165,6 +1172,8 @@ async function analyzeWithAI(dataUrl){
       if(w >= 0 && w <= 3) setChipVal("f-warmth", w);
       pendingPatterned = !!parsed.patterned;
       setToggleVal("f-pattern", pendingPatterned);
+      pendingColorRole = (parsed.color_role === "neutral" || parsed.color_role === "accent") ? parsed.color_role : "";
+      pendingFit = (parsed.fit === "fitted" || parsed.fit === "relaxed" || parsed.fit === "regular") ? parsed.fit : "";
       setToggleVal("f-modest", !!parsed.modest);
       badgeText.textContent = t("ai_tagged");
       badge.querySelector(".pulse").style.animation = "none";
@@ -1301,6 +1310,8 @@ function openTagSheet(existingItem, newImgDataUrl){
   setChipVal("f-warmth", existingItem ? existingItem.warmth : 2);
   setToggleVal("f-modest", existingItem ? !!existingItem.modest : false);
   setToggleVal("f-pattern", existingItem ? !!existingItem.patterned : false);
+  pendingColorRole = existingItem ? (existingItem.colorRole || "") : "";
+  pendingFit = existingItem ? (existingItem.fit || "") : "";
   document.getElementById("btn-delete-item").style.display = existingItem ? "block" : "none";
   document.getElementById("ai-badge").style.display = "none";
   document.getElementById("tag-overlay").classList.add("show");
@@ -1342,7 +1353,8 @@ document.getElementById("btn-save-item").addEventListener("click", async functio
       // create the row first to get an id, then upload the photo, then save its URL
       var ins = await sb.from("items").insert({
         name: name || (color + " " + category), description: desc, color: color,
-        category: category, formalities: formalities, warmth: warmth, modest: modest, patterned: patterned
+        category: category, formalities: formalities, warmth: warmth, modest: modest, patterned: patterned,
+        color_role: pendingColorRole || null, fit: pendingFit || null
       }).select().single();
       if(ins.error) throw ins.error;
       var newItem = rowToItem(ins.data);
@@ -1441,6 +1453,46 @@ function recentItemSets(){
   return history.filter(function(h){ return new Date(h.date).getTime() >= cutoff; })
                 .map(function(h){ return h.itemIds.slice().sort().join(","); });
 }
+var NEUTRAL_WORDS = ["black","white","ivory","cream","beige","tan","camel","grey","gray","charcoal","navy","denim","brown","khaki","sand","nude","\u0623\u0633\u0648\u062f","\u0623\u0628\u064a\u0636","\u0628\u064a\u062c","\u0631\u0645\u0627\u062f\u064a","\u0643\u062d\u0644\u064a","\u0628\u0646\u064a","\u062c\u064a\u0646\u0632"];
+function colorRoleOf(it){
+  if(it.colorRole === "neutral" || it.colorRole === "accent") return it.colorRole;
+  var hay = ((it.color||"") + " " + (it.name||"")).toLowerCase();
+  for(var i=0;i<NEUTRAL_WORDS.length;i++){ if(hay.indexOf(NEUTRAL_WORDS[i]) >= 0) return "neutral"; }
+  return "accent";
+}
+function fitOf(it){
+  if(it.fit === "fitted" || it.fit === "relaxed" || it.fit === "regular") return it.fit;
+  var hay = ((it.name||"") + " " + (it.desc||"")).toLowerCase();
+  var rel = ["oversized","baggy","loose","wide-leg","wide leg","flowy","relaxed","boyfriend","\u0648\u0627\u0633\u0639"];
+  var ft = ["slim","fitted","skinny","bodycon","tailored","\u0636\u064a\u0642"];
+  for(var i=0;i<rel.length;i++){ if(hay.indexOf(rel[i]) >= 0) return "relaxed"; }
+  for(var j=0;j<ft.length;j++){ if(hay.indexOf(ft[j]) >= 0) return "fitted"; }
+  return "regular";
+}
+function shoeKindOf(it){
+  var hay = ((it.name||"") + " " + (it.desc||"")).toLowerCase();
+  if(/heel|pump|stiletto|\u0643\u0639\u0628/.test(hay)) return "heels";
+  if(/sneaker|trainer|running|\u0633\u0646\u064a\u0643\u0631|\u0631\u064a\u0627\u0636\u064a/.test(hay)) return "sneakers";
+  if(/boot|\u0628\u0648\u062a/.test(hay)) return "boots";
+  if(/sandal|slide|\u0635\u0646\u062f\u0644/.test(hay)) return "sandals";
+  if(/flat|loafer|ballet|\u0641\u0644\u0627\u062a/.test(hay)) return "flats";
+  return "other";
+}
+var SHOE_PREF = { party:["heels","boots","flats"], work:["heels","flats","boots"], gathering:["flats","heels","sandals"], friends:["sneakers","flats","sandals","boots"], sport:["sneakers"], picnic:["sneakers","sandals","flats"] };
+function pairKey(a,b){ return a < b ? a + "+" + b : b + "+" + a; }
+var FB = {pairs:{}, items:{}};
+function saveFeedback(){ lsSet("rack_fb", JSON.stringify(FB)); }
+function applyFeedback(entries, dir){
+  var delta = dir === "up" ? 1 : -1;
+  var core = entries.filter(function(e){ var c = e.item.category; return c !== "shoes" && c !== "hijab"; });
+  core.forEach(function(e){ FB.items[e.item.id] = (FB.items[e.item.id]||0) + delta; });
+  for(var a=0;a<core.length;a++){ for(var b=a+1;b<core.length;b++){
+    var pk = pairKey(core[a].item.id, core[b].item.id);
+    FB.pairs[pk] = (FB.pairs[pk]||0) + delta;
+  }}
+  saveFeedback();
+  showToast(dir === "up" ? t("toast_fb_up") : t("toast_fb_down"));
+}
 function looksPatterned(it){
   if(it.patterned) return true;
   var hay = ((it.name||"") + " " + (it.desc||"") + " " + (it.color||"")).toLowerCase();
@@ -1486,6 +1538,30 @@ function generateOutfits(count){
       if(e.item.formalities.indexOf(wantF[0]) >= 0) s += 2;
       s += (e.item.warmth === 0) ? 2 : (2 - Math.abs(e.item.warmth - tW));
     });
+    var accentN = 0;
+    entries.forEach(function(e){ if(colorRoleOf(e.item) === "accent") accentN++; });
+    if(accentN > 1) s -= 8 * (accentN - 1);
+    var topE = null, botE = null, shoeE = null;
+    entries.forEach(function(e){
+      if(e.item.category === "top") topE = e.item;
+      if(e.item.category === "bottom") botE = e.item;
+      if(e.item.category === "shoes") shoeE = e.item;
+    });
+    if(topE && botE && fitOf(topE) === "relaxed" && fitOf(botE) === "relaxed") s -= 4;
+    if(shoeE){
+      var k = shoeKindOf(shoeE);
+      var pref = SHOE_PREF[selOccasion] || [];
+      if(pref.indexOf(k) >= 0) s += 3;
+      if(selOccasion === "sport" && k !== "sneakers" && k !== "other") s -= 6;
+      if((selOccasion === "party" || selOccasion === "work") && k === "sneakers") s -= 5;
+    }
+    for(var a=0;a<entries.length;a++){
+      s += Math.max(-3, Math.min(3, (FB.items[entries[a].item.id]||0)));
+      for(var b=a+1;b<entries.length;b++){
+        var pk = pairKey(entries[a].item.id, entries[b].item.id);
+        s += 2 * Math.max(-3, Math.min(3, (FB.pairs[pk]||0)));
+      }
+    }
     return s + Math.random() * 0.8;
   }
   function pushCombo(coreEntries){
@@ -1506,6 +1582,9 @@ function generateOutfits(count){
       var patternCount = 0;
       entries.forEach(function(e){ if(looksPatterned(e.item)) patternCount++; });
       if(patternCount > 1) return; // never stack pattern on pattern
+      var accentCount = 0;
+      entries.forEach(function(e){ if(colorRoleOf(e.item) === "accent") accentCount++; });
+      if(accentCount > 2) return; // too many loud colors
       var maxLvl = 0;
       entries.forEach(function(e){ if(e.lvl > maxLvl) maxLvl = e.lvl; });
       combos.push({ entries: entries, key: ids, sc: score(entries), stretch: maxLvl > 0 });
@@ -1623,9 +1702,78 @@ async function aiCaptions(pickedCombos){
   }catch(e){ return null; }
 }
 
+async function aiPickOutfits(count){
+  if(!apiKey) return null;
+  try{
+    var usable = items.filter(function(it){
+      if(!it.img) return false;
+      if(selModest && (it.category === "top" || it.category === "bottom" || it.category === "dress") && !it.modest) return false;
+      return true;
+    });
+    if(usable.length < 3) return null;
+    var inv = usable.map(function(it){
+      var o = { id: it.id, name: it.name, color: it.color, category: it.category,
+        formality: (it.formalities||[]).join("/"), warmth: it.warmth,
+        modest: !!it.modest, patterned: looksPatterned(it),
+        color_role: colorRoleOf(it), fit: fitOf(it) };
+      if(it.category === "shoes") o.shoe_kind = shoeKindOf(it);
+      return o;
+    });
+    var recentSets = recentItemSets();
+    var likedPairs = [];
+    Object.keys(FB.pairs).forEach(function(k){ if(FB.pairs[k] > 0) likedPairs.push(k); });
+    likedPairs = likedPairs.slice(0, 8);
+    var prompt = "You are an expert Pinterest fashion stylist. From this closet inventory (JSON), assemble up to " + count + " complete outfits. " +
+      "Context: occasion=" + selOccasion + ", season=" + selWeather +
+      (selModest ? ", modest style required; include exactly one hijab item in each look if any exists" : "") +
+      (selBase !== "any" ? (", the base garment must be a " + selBase) : "") + ". " +
+      "Rules: each look is a dress OR top+bottom, plus shoes if suitable ones exist, plus outerwear in cold seasons; NEVER combine two patterned pieces; at most ONE accent-color piece per look with the rest neutral; balance silhouettes (avoid relaxed top with relaxed bottom); shoes must suit the occasion; do NOT reuse any item across the looks except shoes and hijab; avoid these recently-worn id sets: " + JSON.stringify(recentSets) + "." +
+      (likedPairs.length ? (" The user previously liked these item-id pairs together, prefer them: " + JSON.stringify(likedPairs) + ".") : "") + " " +
+      "Inventory: " + JSON.stringify(inv) + " " +
+      "Respond ONLY with a JSON array, no markdown, no backticks: [{\"item_ids\":[...],\"caption\":\"a 1-2 sentence Pinterest-style caption" + (LANG === "ar" ? " written in Arabic" : "") + "\"}]";
+    var response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: aiHeaders(),
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1500,
+        messages: [{ role: "user", content: prompt }] })
+    });
+    var data = await response.json();
+    var text = "";
+    if(data && data.content){ for(var i=0;i<data.content.length;i++){ if(data.content[i].type === "text") text += data.content[i].text; } }
+    var arr = JSON.parse(text.replace(/```json|```/g, "").trim());
+    if(!Array.isArray(arr)) return null;
+    var byId = {};
+    usable.forEach(function(it){ byId[it.id] = it; });
+    var used = {};
+    var out = [];
+    arr.slice(0, count).forEach(function(look){
+      if(!look || !Array.isArray(look.item_ids)) return;
+      var ents = [], ok = true, patterns = 0;
+      look.item_ids.forEach(function(id){
+        var it = byId[id];
+        if(!it){ ok = false; return; }
+        if(looksPatterned(it)) patterns++;
+        if(it.category !== "shoes" && it.category !== "hijab" && used[id]) ok = false;
+        ents.push({ item: it, lvl: 0 });
+      });
+      if(!ok || ents.length < 2 || patterns > 1) return;
+      ents.forEach(function(e){ if(e.item.category !== "shoes" && e.item.category !== "hijab") used[e.item.id] = true; });
+      out.push({ entries: ents, key: ents.map(function(e){ return e.item.id; }).sort().join(","), sc: 0, stretch: false,
+                 aiCaption: (typeof look.caption === "string") ? look.caption : "" });
+    });
+    return out.length ? out : null;
+  }catch(e){ return null; }
+}
+
 document.getElementById("btn-generate").addEventListener("click", async function(){
   var btn = this;
+  btn.disabled = true;
+  btn.textContent = t("styling");
   var res = generateOutfits(selCount);
+  var aiPicked = await aiPickOutfits(selCount);
+  if(aiPicked && aiPicked.length){ res = { picked: aiPicked, missing: res.missing }; }
+  btn.disabled = false;
+  btn.textContent = styleBtnLabel();
   var results = document.getElementById("outfit-results");
   results.innerHTML = "";
 
@@ -1647,9 +1795,18 @@ document.getElementById("btn-generate").addEventListener("click", async function
       '<div class="outfit-photos">' + photos + '</div>' +
       '<div class="outfit-caption"><span class="spinner-caption">' + t("writing") + '</span></div>' +
       '<div class="outfit-items">' + itemList + '</div>' +
-      '<button class="wear-btn">' + t("wear") + '</button>';
+      '<button class="wear-btn">' + t("wear") + '</button>' +
+      '<span class="fb-row"><button class="fb-btn" data-fb="up">\ud83d\udc4d</button><button class="fb-btn" data-fb="down">\ud83d\udc4e</button></span>';
     results.appendChild(card);
     captionEls.push(card.querySelector(".outfit-caption"));
+
+    card.querySelectorAll(".fb-btn").forEach(function(fb){
+      fb.addEventListener("click", function(){
+        applyFeedback(combo.entries, fb.dataset.fb);
+        card.querySelectorAll(".fb-btn").forEach(function(x){ x.disabled = true; });
+        fb.classList.add("on");
+      });
+    });
 
     card.querySelector(".wear-btn").addEventListener("click", async function(e){
       var ids = combo.entries.map(function(en){ return en.item.id; });
@@ -1684,9 +1841,10 @@ document.getElementById("btn-generate").addEventListener("click", async function
   if(res.picked.length > 0){
     btn.disabled = true;
     btn.textContent = t("styling");
-    var caps = await aiCaptions(res.picked);
+    var needCaps = res.picked.some(function(c){ return !c.aiCaption; });
+    var caps = needCaps ? await aiCaptions(res.picked) : null;
     res.picked.forEach(function(combo, idx){
-      var text = (caps && caps[idx]) ? caps[idx] : localCaption(combo.entries);
+      var text = combo.aiCaption || ((caps && caps[idx]) ? caps[idx] : localCaption(combo.entries));
       captionEls[idx].textContent = text;
     });
     btn.disabled = false;
@@ -1841,6 +1999,7 @@ document.getElementById("lang-sw-ar").addEventListener("click", function(){ choo
 
 (async function start(){
   // paint interface language early from the local hint (avoids flash)
+  try{ var fbRaw = lsGet("rack_fb"); if(fbRaw) FB = JSON.parse(fbRaw); }catch(e){}
   var hint = lsGet("rack_lang");
   applyLanguage((hint === "ar" || hint === "en") ? hint : "en");
   refreshAuthLabels();
