@@ -332,6 +332,7 @@ textarea.text-input{resize:none;font-family:'Inter';}
 .fb-note-send{padding:8px 16px;background:var(--mauve);color:#fff;border:none;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;}
 .swap-wrap{position:relative;flex-shrink:0;}
 .swap-btn{position:absolute;bottom:5px;inset-inline-end:5px;width:26px;height:26px;border-radius:50%;background:rgba(43,34,38,0.78);color:#fff;border:none;font-size:13px;cursor:pointer;line-height:1;padding:0;}
+.rm-btn{position:absolute;top:5px;inset-inline-end:5px;width:26px;height:26px;border-radius:50%;background:rgba(181,83,60,0.85);color:#fff;border:none;font-size:12px;cursor:pointer;line-height:1;padding:0;}
 
 .missing-box{
   margin-top:18px;
@@ -2043,6 +2044,13 @@ async function aiCaptions(pickedCombos){
   }catch(e){ return null; }
 }
 
+function buildPhotosHtml(combo){
+  return combo.entries.map(function(e, pi){
+    var rm = (e.item.category === "outerwear" && (selWeather === "summer" || selWeather === "spring"))
+      ? '<button class="rm-btn" data-pi="' + pi + '">\u2715</button>' : "";
+    return '<div class="swap-wrap"><img src="' + (e.item.img || "") + '"><button class="swap-btn" data-pi="' + pi + '">\u21c4</button>' + rm + '</div>';
+  }).join("");
+}
 async function aiPickOutfits(count){
   if(!apiKey) return null;
   try{
@@ -2132,7 +2140,7 @@ document.getElementById("btn-generate").addEventListener("click", async function
   res.picked.forEach(function(combo, idx){
     var card = document.createElement("div");
     card.className = "outfit-card";
-    var photos = combo.entries.map(function(e, pi){ return '<div class="swap-wrap"><img src="' + (e.item.img || "") + '"><button class="swap-btn" data-pi="' + pi + '">\u21c4</button></div>'; }).join("");
+    var photos = buildPhotosHtml(combo);
     var itemList = combo.entries.map(function(e){
       return lbl("cat", e.item.category) + ": " + escapeHtml(e.item.color + " " + e.item.name);
     }).join(" \u00B7 ");
@@ -2148,53 +2156,67 @@ document.getElementById("btn-generate").addEventListener("click", async function
     captionEls.push(card.querySelector(".outfit-caption"));
 
     var swapCycles = {};
-    card.querySelectorAll(".swap-btn").forEach(function(sb){
-      sb.addEventListener("click", function(){
-        var pi = parseInt(sb.dataset.pi, 10);
-        var current = combo.entries[pi].item;
-        var cat = current.category;
-        var wantF = FORMALITY_BY_OCCASION[selOccasion];
-        var tW = WARMTH_BY_WEATHER[selWeather];
-        var usedHere = {};
-        combo.entries.forEach(function(en, j){ if(j !== pi) usedHere[en.item.id] = true; });
-        var usedElsewhere = {};
-        (currentLooks || []).forEach(function(c2){
-          if(c2 === combo) return;
-          c2.entries.forEach(function(en){
-            if(en.item.category !== "shoes" && en.item.category !== "hijab") usedElsewhere[en.item.id] = true;
+    function refreshLook(){
+      combo.key = combo.entries.map(function(en){ return en.item.id; }).sort().join(",");
+      combo.aiCaption = "";
+      var ph = card.querySelector(".outfit-photos");
+      if(ph) ph.innerHTML = buildPhotosHtml(combo);
+      var listEl = card.querySelector(".outfit-items");
+      if(listEl) listEl.innerHTML = combo.entries.map(function(en){
+        return lbl("cat", en.item.category) + ": " + escapeHtml(en.item.color + " " + en.item.name);
+      }).join(" \u00B7 ");
+      var capEl = card.querySelector(".outfit-caption");
+      if(capEl) capEl.textContent = localCaption(combo.entries);
+      var wb = card.querySelector(".wear-btn");
+      if(wb){ wb.disabled = false; wb.textContent = t("wear"); }
+      wireItemButtons();
+    }
+    function wireItemButtons(){
+      card.querySelectorAll(".swap-btn").forEach(function(sb){
+        sb.addEventListener("click", function(){
+          var pi = parseInt(sb.dataset.pi, 10);
+          var current = combo.entries[pi].item;
+          var cat = current.category;
+          var wantF = FORMALITY_BY_OCCASION[selOccasion];
+          var tW = WARMTH_BY_WEATHER[selWeather];
+          var usedHere = {};
+          combo.entries.forEach(function(en, j){ if(j !== pi) usedHere[en.item.id] = true; });
+          var usedElsewhere = {};
+          (currentLooks || []).forEach(function(c2){
+            if(c2 === combo) return;
+            c2.entries.forEach(function(en){
+              if(en.item.category !== "shoes" && en.item.category !== "hijab") usedElsewhere[en.item.id] = true;
+            });
           });
+          var othersPatterned = combo.entries.some(function(en, j){ return j !== pi && looksPatterned(en.item); });
+          var cands = items.filter(function(it){
+            if(it.category !== cat) return false;
+            if(it.id === current.id) return false;
+            if(usedHere[it.id]) return false;
+            if(cat !== "shoes" && cat !== "hijab" && usedElsewhere[it.id]) return false;
+            if(selModest && (cat === "top" || cat === "bottom" || cat === "dress") && !it.modest) return false;
+            if(matchLevel(it, wantF, tW) > 2) return false;
+            if(cat === "bottom" && selBase === "pants" && bottomIsSkirt(it)) return false;
+            if(cat === "bottom" && selBase === "skirt" && !bottomIsSkirt(it)) return false;
+            if(othersPatterned && looksPatterned(it)) return false;
+            return true;
+          });
+          if(!cands.length){ showToast(t("toast_no_alt")); return; }
+          swapCycles[pi] = ((swapCycles[pi] === undefined ? -1 : swapCycles[pi]) + 1) % cands.length;
+          var next = cands[swapCycles[pi]];
+          combo.entries[pi] = { item: next, lvl: matchLevel(next, wantF, tW) };
+          refreshLook();
         });
-        var othersPatterned = combo.entries.some(function(en, j){ return j !== pi && looksPatterned(en.item); });
-        var cands = items.filter(function(it){
-          if(it.category !== cat) return false;
-          if(it.id === current.id) return false;
-          if(usedHere[it.id]) return false;
-          if(cat !== "shoes" && cat !== "hijab" && usedElsewhere[it.id]) return false;
-          if(selModest && (cat === "top" || cat === "bottom" || cat === "dress") && !it.modest) return false;
-          if(matchLevel(it, wantF, tW) > 2) return false;
-          if(cat === "bottom" && selBase === "pants" && bottomIsSkirt(it)) return false;
-          if(cat === "bottom" && selBase === "skirt" && !bottomIsSkirt(it)) return false;
-          if(othersPatterned && looksPatterned(it)) return false;
-          return true;
-        });
-        if(!cands.length){ showToast(t("toast_no_alt")); return; }
-        swapCycles[pi] = ((swapCycles[pi] === undefined ? -1 : swapCycles[pi]) + 1) % cands.length;
-        var next = cands[swapCycles[pi]];
-        combo.entries[pi] = { item: next, lvl: matchLevel(next, wantF, tW) };
-        combo.key = combo.entries.map(function(en){ return en.item.id; }).sort().join(",");
-        combo.aiCaption = "";
-        var img = sb.parentElement.querySelector("img");
-        if(img) img.src = next.img || "";
-        var listEl = card.querySelector(".outfit-items");
-        if(listEl) listEl.innerHTML = combo.entries.map(function(en){
-          return lbl("cat", en.item.category) + ": " + escapeHtml(en.item.color + " " + en.item.name);
-        }).join(" \u00B7 ");
-        var capEl = card.querySelector(".outfit-caption");
-        if(capEl) capEl.textContent = localCaption(combo.entries);
-        var wb = card.querySelector(".wear-btn");
-        if(wb){ wb.disabled = false; wb.textContent = t("wear"); }
       });
-    });
+      card.querySelectorAll(".rm-btn").forEach(function(rb){
+        rb.addEventListener("click", function(){
+          var pi = parseInt(rb.dataset.pi, 10);
+          combo.entries.splice(pi, 1);
+          refreshLook();
+        });
+      });
+    }
+    wireItemButtons();
 
     card.querySelectorAll(".fb-btn").forEach(function(fb){
       fb.addEventListener("click", function(){
