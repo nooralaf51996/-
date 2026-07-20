@@ -1467,6 +1467,7 @@ function recentItemSets(){
 // ---- extend fabric vocab for "avoid" rules ----
 (function(){
   var extra = { fauxfur:["faux fur","fur"], fleece:["fleece","heavy fleece"], mesh:["mesh","athletic mesh","sport mesh"] };
+  if(typeof FABRIC_WORDS === "undefined" || !FABRIC_WORDS){ FABRIC_WORDS = {}; }
   for(var k in extra){ if(!FABRIC_WORDS[k]) FABRIC_WORDS[k] = extra[k]; }
 })();
 // ---- texture pairs to AVOID (penalties) ----
@@ -1496,6 +1497,7 @@ function avoidPenalty(a, b){
     chambray:["chambray"], seersucker:["seersucker"], rayon:["rayon"],
     viscose:["viscose"], jersey:["jersey"], linenblend:["linen blend","linen-blend"], lightwool:["light wool","lightweight wool","tropical wool"]
   };
+  if(typeof FABRIC_WORDS === "undefined" || !FABRIC_WORDS){ FABRIC_WORDS = {}; }
   for(var k in extra){ if(!FABRIC_WORDS[k]) FABRIC_WORDS[k] = extra[k]; }
 })();
 // ---- summer texture pairings (bonus only in warm seasons) ----
@@ -1538,6 +1540,7 @@ function winterTextureBonus(a, b){
     woolblazer:["wool blazer"], velvetblazer:["velvet blazer"], tweedblazer:["tweed blazer"],
     woolcoat:["wool coat","overcoat"], tuxedo:["tuxedo","tux"]
   };
+  if(typeof GARMENT_WORDS === "undefined" || !GARMENT_WORDS){ GARMENT_WORDS = {}; }
   for(var k in extra){ if(!GARMENT_WORDS[k]) GARMENT_WORDS[k] = extra[k]; }
 })();
 // formal proven top+bottom pairings (only at formal occasions)
@@ -1586,6 +1589,7 @@ function formalLayerBonus(entries){
     corduroypants:["corduroy pant","cord pant","corduroy trouser"],
     blazer:["blazer","sport coat","suit jacket"]
   };
+  if(typeof GARMENT_WORDS === "undefined" || !GARMENT_WORDS){ GARMENT_WORDS = {}; }
   for(var k in extra){ if(!GARMENT_WORDS[k]) GARMENT_WORDS[k] = extra[k]; }
 })();
 // smart-casual proven top+bottom pairings
@@ -1625,7 +1629,7 @@ function blazerBonus(entries){
 }
 
 // ---- proven top+bottom pairings (garment types) ----
-var GARMENT_WORDS = {
+var GARMENT_WORDS_BASE = {
   tshirt:["t-shirt","tee","tshirt","\u062a\u064a \u0634\u064a\u0631\u062a"], polo:["polo","\u0628\u0648\u0644\u0648"],
   linenshirt:["linen shirt"], shirt:["shirt","button","\u0642\u0645\u064a\u0635"], hoodie:["hoodie","fleece","\u0647\u0648\u062f\u064a"],
   knit:["knit","sweater","jumper","cardigan","\u0628\u0644\u0648\u0641\u0631","\u0643\u0646\u0632\u0629"], denimshirt:["denim shirt","chambray"],
@@ -1634,11 +1638,17 @@ var GARMENT_WORDS = {
   linenpants:["linen pant","linen trouser"], shorts:["shorts","\u0634\u0648\u0631\u062a"], joggers:["jogger","sweatpant","\u062c\u0648\u062c\u0631"],
   trousers:["trouser","pants","slacks","\u0628\u0646\u0637\u0644\u0648\u0646"], skirt:["skirt","\u062a\u0646\u0648\u0631\u0629"]
 };
+var GARMENT_WORDS = (typeof GARMENT_WORDS !== "undefined" && GARMENT_WORDS) ? GARMENT_WORDS : {};
+for(var _gk in GARMENT_WORDS_BASE){ if(!GARMENT_WORDS[_gk]) GARMENT_WORDS[_gk] = GARMENT_WORDS_BASE[_gk]; }
 function garmentType(it){
   var hay = ((it.name||"") + " " + (it.desc||"")).toLowerCase();
-  // order matters: check compound words first
-  var order = ["tshirt","polo","linenshirt","denimshirt","flannel","henley","hoodie","knit","linenpants","joggers","chinos","jeans","shorts","trousers","skirt","shirt","blouse"];
-  for(var i=0;i<order.length;i++){ var al = GARMENT_WORDS[order[i]]; for(var j=0;j<al.length;j++){ if(hay.indexOf(al[j]) >= 0) return order[i]; } }
+  // most specific (multi-word) types first, generic last
+  var order = ["dressshirt","silkshirt","woolsuit","wooltrousers","woolpants","tailoredpants","woolsweater","cashmere","corduroypants","woolblazer","velvetblazer","tweedblazer","woolcoat","tuxedo","blazer","oxford","tshirt","polo","linenshirt","denimshirt","flannel","henley","hoodie","knit","linenpants","joggers","chinos","jeans","shorts","trousers","skirt","shirt","blouse"];
+  for(var i=0;i<order.length;i++){
+    var al = GARMENT_WORDS[order[i]];
+    if(!al) continue;
+    for(var j=0;j<al.length;j++){ if(hay.indexOf(al[j]) >= 0) return order[i]; }
+  }
   return null;
 }
 // top-type -> list of bottom-types that pair well
@@ -1720,13 +1730,15 @@ function colorsHarmonize(a, b){
 }
 
 // ---- fabric pairing ----
-var FABRIC_WORDS = {
+var FABRIC_WORDS_BASE = {
   cotton:["cotton","jersey","\u0642\u0637\u0646"], linen:["linen","\u0643\u062a\u0627\u0646"], denim:["denim","jean","\u062c\u064a\u0646\u0632"],
   wool:["wool","merino","\u0635\u0648\u0641"], cashmere:["cashmere","\u0643\u0634\u0645\u064a\u0631"], silk:["silk","\u062d\u0631\u064a\u0631"],
   leather:["leather","\u062c\u0644\u062f"], suede:["suede","\u0634\u0627\u0645\u0648\u0627"], corduroy:["corduroy","cord","\u0642\u0637\u064a\u0641\u0629 \u0645\u0636\u0644\u0639\u0629"],
   flannel:["flannel","\u0641\u0644\u0627\u0646\u0644"], knit:["knit","knitwear","sweater","\u062a\u0631\u064a\u0643\u0648","\u0635\u0648\u0641\u064a\u0629"],
   chino:["chino","twill","\u062a\u0634\u064a\u0646\u0648"], tweed:["tweed","\u062a\u0648\u064a\u062f"], velvet:["velvet","\u0645\u062e\u0645\u0644"], satin:["satin","\u0633\u0627\u062a\u0627\u0646"]
 };
+var FABRIC_WORDS = (typeof FABRIC_WORDS !== "undefined" && FABRIC_WORDS) ? FABRIC_WORDS : {};
+for(var _fk in FABRIC_WORDS_BASE){ if(!FABRIC_WORDS[_fk]) FABRIC_WORDS[_fk] = FABRIC_WORDS_BASE[_fk]; }
 var FABRIC_PAIR = {
   cotton:["denim","linen","wool","chino","corduroy","cotton"], linen:["cotton","denim","wool","linen"],
   denim:["cotton","knit","leather","flannel","denim"], wool:["cotton","cashmere","silk","leather","wool"],
