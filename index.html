@@ -477,6 +477,10 @@ html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
 [dir="rtl"] .hist-thumbs img{margin-left:0;margin-right:-10px;}
 [dir="rtl"] .hist-thumbs img:first-child{margin-right:0;}
 [dir="rtl"] .install-banner .dismiss{float:left;margin-left:0;margin-right:8px;}
+.shop-card{background:var(--card);border:1px solid var(--line);border-inline-start:4px solid var(--mauve);border-radius:14px;padding:14px 16px;margin-bottom:14px;}
+.shop-h{font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--mauve);font-weight:600;margin-bottom:6px;}
+.shop-text{font-family:"Fraunces",serif;font-style:italic;font-size:15px;line-height:1.5;}
+html[lang="ar"] .shop-text{font-family:"Amiri",serif;font-style:normal;}
 </style>
 </head>
 <body>
@@ -498,6 +502,7 @@ html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
         <span class="dismiss" id="install-dismiss">✕</span>
         <b data-i18n="install_lead">Make Rack a real app:</b> <span id="install-text"></span>
       </div>
+      <div class="shop-card" id="shop-card" style="display:none;"><div class="shop-h" data-i18n="shop_h">Piece of the month</div><div class="shop-text" id="shop-text"></div></div>
       <div class="closet-grid" id="closet-grid"></div>
     </section>
 
@@ -602,6 +607,8 @@ html[lang="ar"] .empty-state{font-family:'IBM Plex Sans Arabic',sans-serif;}
       <div class="chip-row" id="f-category"></div>
       <div class="field-label" data-i18n="color_l">Color</div>
       <input class="text-input" id="f-color" data-i18n-ph="ph_color" placeholder="e.g. ivory, black">
+      <div class="field-label" data-i18n="fabric_l">Material</div>
+      <input class="text-input" id="f-fabric" data-i18n-ph="ph_fabric" placeholder="e.g. linen, wool, denim">
       <div class="field-label" data-i18n="form_l">Formality</div>
       <div class="chip-row" id="f-formality"></div>
       <div class="field-label" data-i18n="warm_l">Warmth</div>
@@ -661,7 +668,7 @@ en: {
   hist_label: "Last 14 days", cur_closet_label: "Your account", your_closets_label: "Account", ai_label: "AI auto-tagging",
   any: "Any", modest: "Modest", standard: "Standard",
   name_l: "Name", desc_l: "Description", cat_l: "Category", color_l: "Color",
-  form_l: "Formality \u2014 pick all that apply", warm_l: "Warmth", cover_l: "Coverage", pattern_l: "Pattern", solid: "Solid", patterned: "Patterned",
+  form_l: "Formality \u2014 pick all that apply", warm_l: "Warmth", cover_l: "Coverage", pattern_l: "Pattern", solid: "Solid", patterned: "Patterned", fabric_l: "Material", ph_fabric: "e.g. linen, wool, denim",
   ph_name: "e.g. Blush satin blouse", ph_desc: "A little Pinterest-style caption \u2014 AI writes this for you", ph_color: "e.g. blush, ivory, black",
   new_piece: "New piece", edit_piece: "Edit piece", add_piece: "Add a piece", add_tile: "Add a piece",
   take_photo: "\ud83d\udcf7 &nbsp;Take a photo", choose_lib: "\ud83d\uddbc &nbsp;Choose from library",
@@ -681,7 +688,7 @@ en: {
   empty_hist: "Nothing worn yet. Outfits you log stay here for two weeks so Rack never repeats them.",
   empty_gen: "Not enough usable pieces for this combination yet \u2014 add a top, bottoms and shoes (or a dress and shoes) and try again.",
   loading: "loading\u2026", saving: "saving\u2026", saved_pill: "{n} pieces \u2713 saved", failed_pill: "save failed!",
-  toast_saved: "Saved to closet", toast_removed: "Removed", toast_hist: "Saved to your 14-day history", toast_fb_up: "Noted \u2014 more looks like this", toast_fb_down: "Noted \u2014 fewer looks like this", fb_why: "What would make it better?", fb_ph: "e.g. too formal, colors clash, don\u2019t pair these two\u2026", fb_send: "Send", fb_thanks: "Thanks \u2014 I\u2019ll remember that", oops: "Something went wrong \u2014 try again", toast_no_alt: "No other piece fits here", tip_photo: "Tip: clear photos help the AI style you better \u2014 one piece, laid flat, good light.",
+  toast_saved: "Saved to closet", toast_removed: "Removed", toast_hist: "Saved to your 14-day history", toast_fb_up: "Noted \u2014 more looks like this", toast_fb_down: "Noted \u2014 fewer looks like this", fb_why: "What would make it better?", fb_ph: "e.g. too formal, colors clash, don\u2019t pair these two\u2026", fb_send: "Send", fb_thanks: "Thanks \u2014 I\u2019ll remember that", oops: "Something went wrong \u2014 try again", toast_no_alt: "No other piece fits here", shop_h: "Piece of the month", shop_loading: "Reading your closet\u2026", shop_fb: "Your closet could use one more {c} \u2014 a versatile piece there would unlock many new looks.", tip_photo: "Tip: clear photos help the AI style you better \u2014 one piece, laid flat, good light.",
   toast_new_closet: "New closet {id} ready", toast_opened: "Opened closet {id}",
   toast_savefail: "Save failed \u2014 free up device storage and try again", toast_photo: "Could not read that photo",
   ai_looking: "AI is looking\u2026", ai_tagged: "AI tagged \u2713 review below", ai_unavail: "AI unavailable \u2014 tag manually",
@@ -706,7 +713,7 @@ ar: {
   hist_label: "\u0622\u062e\u0631 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627", cur_closet_label: "\u062d\u0633\u0627\u0628\u0643", your_closets_label: "\u0627\u0644\u062d\u0633\u0627\u0628", ai_label: "\u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u0627\u0644\u0630\u0643\u064a",
   any: "\u0627\u0644\u0643\u0644", modest: "\u0645\u062d\u062a\u0634\u0645", standard: "\u0639\u0627\u062f\u064a",
   name_l: "\u0627\u0644\u0627\u0633\u0645", desc_l: "\u0627\u0644\u0648\u0635\u0641", cat_l: "\u0627\u0644\u0641\u0626\u0629", color_l: "\u0627\u0644\u0644\u0648\u0646",
-  form_l: "\u0627\u0644\u0631\u0633\u0645\u064a\u0629 \u2014 \u0627\u062e\u062a\u0627\u0631\u064a \u0643\u0644 \u0645\u0627 \u064a\u0646\u0637\u0628\u0642", warm_l: "\u0627\u0644\u062f\u0641\u0621", cover_l: "\u0627\u0644\u062a\u063a\u0637\u064a\u0629", pattern_l: "\u0627\u0644\u0646\u0642\u0634\u0629", solid: "\u0633\u0627\u062f\u0629", patterned: "\u0645\u0646\u0642\u0648\u0634",
+  form_l: "\u0627\u0644\u0631\u0633\u0645\u064a\u0629 \u2014 \u0627\u062e\u062a\u0627\u0631\u064a \u0643\u0644 \u0645\u0627 \u064a\u0646\u0637\u0628\u0642", warm_l: "\u0627\u0644\u062f\u0641\u0621", cover_l: "\u0627\u0644\u062a\u063a\u0637\u064a\u0629", pattern_l: "\u0627\u0644\u0646\u0642\u0634\u0629", solid: "\u0633\u0627\u062f\u0629", patterned: "\u0645\u0646\u0642\u0648\u0634", fabric_l: "\u0627\u0644\u062e\u0627\u0645\u0629", ph_fabric: "\u0645\u062b\u0627\u0644: \u0643\u062a\u0627\u0646\u060c \u0635\u0648\u0641\u060c \u062c\u064a\u0646\u0632",
   ph_name: "\u0645\u062b\u0627\u0644: \u0628\u0644\u0648\u0632\u0629 \u0633\u0627\u062a\u0627\u0646 \u0648\u0631\u062f\u064a\u0629", ph_desc: "\u0648\u0635\u0641 \u0642\u0635\u064a\u0631 \u0628\u0633\u062a\u0627\u064a\u0644 \u0628\u0646\u062a\u0631\u0633\u062a \u2014 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u064a\u0643\u062a\u0628\u0647 \u0644\u0643", ph_color: "\u0645\u062b\u0627\u0644: \u0648\u0631\u062f\u064a\u060c \u0639\u0627\u062c\u064a\u060c \u0623\u0633\u0648\u062f",
   new_piece: "\u0642\u0637\u0639\u0629 \u062c\u062f\u064a\u062f\u0629", edit_piece: "\u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0642\u0637\u0639\u0629", add_piece: "\u0623\u0636\u064a\u0641\u064a \u0642\u0637\u0639\u0629", add_tile: "\u0623\u0636\u064a\u0641\u064a \u0642\u0637\u0639\u0629",
   take_photo: "\ud83d\udcf7 &nbsp;\u0627\u0644\u062a\u0642\u0637\u064a \u0635\u0648\u0631\u0629", choose_lib: "\ud83d\uddbc &nbsp;\u0627\u062e\u062a\u0627\u0631\u064a \u0645\u0646 \u0627\u0644\u0635\u0648\u0631",
@@ -726,7 +733,7 @@ ar: {
   empty_hist: "\u0644\u0645 \u062a\u0633\u062c\u0651\u0644\u064a \u0623\u064a \u0625\u0637\u0644\u0627\u0644\u0629 \u0628\u0639\u062f. \u0627\u0644\u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0627\u0644\u062a\u064a \u062a\u0633\u062c\u0644\u064a\u0646\u0647\u0627 \u062a\u0628\u0642\u0649 \u0647\u0646\u0627 \u0623\u0633\u0628\u0648\u0639\u064a\u0646 \u062d\u062a\u0649 \u0644\u0627 \u062a\u062a\u0643\u0631\u0631.",
   empty_gen: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0642\u0637\u0639 \u0643\u0627\u0641\u064a\u0629 \u0644\u0647\u0630\u0647 \u0627\u0644\u062a\u0631\u0643\u064a\u0628\u0629 \u0628\u0639\u062f \u2014 \u0623\u0636\u064a\u0641\u064a \u062a\u0648\u0628\u064b\u0627 \u0648\u0642\u0637\u0639\u0629 \u0633\u0641\u0644\u064a\u0629 \u0648\u062d\u0630\u0627\u0621\u064b (\u0623\u0648 \u0641\u0633\u062a\u0627\u0646\u064b\u0627 \u0648\u062d\u0630\u0627\u0621\u064b) \u0648\u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627.",
   loading: "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644\u2026", saving: "\u062c\u0627\u0631\u064d \u0627\u0644\u062d\u0641\u0638\u2026", saved_pill: "{n} \u0642\u0637\u0639\u0629 \u2713 \u0645\u062d\u0641\u0648\u0638\u0629", failed_pill: "\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638!",
-  toast_saved: "\u062a\u0645 \u0627\u0644\u062d\u0641\u0638 \u0641\u064a \u0627\u0644\u062e\u0632\u0627\u0646\u0629", toast_removed: "\u062a\u0645 \u0627\u0644\u062d\u0630\u0641", toast_hist: "\u062d\u064f\u0641\u0638\u062a \u0641\u064a \u0633\u062c\u0644 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627", toast_fb_up: "\u062a\u0645 \u2014 \u0627\u0644\u0645\u0632\u064a\u062f \u0645\u0646 \u0627\u0644\u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0627\u0644\u0645\u0634\u0627\u0628\u0647\u0629", toast_fb_down: "\u062a\u0645 \u2014 \u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0623\u0642\u0644 \u0645\u0646 \u0647\u0630\u0627 \u0627\u0644\u0646\u0648\u0639", fb_why: "\u0645\u0627 \u0627\u0644\u0630\u064a \u064a\u062c\u0639\u0644\u0647\u0627 \u0623\u0641\u0636\u0644\u061f", fb_ph: "\u0645\u062b\u0627\u0644: \u0631\u0633\u0645\u064a\u0629 \u0632\u064a\u0627\u062f\u0629\u060c \u0627\u0644\u0623\u0644\u0648\u0627\u0646 \u0644\u0627 \u062a\u062a\u0646\u0627\u0633\u0642\u060c \u0644\u0627 \u062a\u062c\u0645\u0639\u064a \u0647\u0627\u062a\u064a\u0646\u2026", fb_send: "\u0625\u0631\u0633\u0627\u0644", fb_thanks: "\u0634\u0643\u0631\u064b\u0627 \u2014 \u0633\u0623\u062a\u0630\u0643\u0631 \u0630\u0644\u0643", oops: "\u062d\u062f\u062b \u062e\u0637\u0623 \u2014 \u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627", toast_no_alt: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0642\u0637\u0639\u0629 \u0623\u062e\u0631\u0649 \u0645\u0646\u0627\u0633\u0628\u0629 \u0647\u0646\u0627", tip_photo: "\u0646\u0635\u064a\u062d\u0629: \u0627\u0644\u0635\u0648\u0631 \u0627\u0644\u0648\u0627\u0636\u062d\u0629 \u062a\u0633\u0627\u0639\u062f \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0639\u0644\u0649 \u062a\u0646\u0633\u064a\u0642\u0643 \u0628\u0634\u0643\u0644 \u0623\u0641\u0636\u0644 \u2014 \u0642\u0637\u0639\u0629 \u0648\u0627\u062d\u062f\u0629\u060c \u0645\u0641\u0631\u0648\u062f\u0629\u060c \u0628\u0625\u0636\u0627\u0621\u0629 \u062c\u064a\u062f\u0629.",
+  toast_saved: "\u062a\u0645 \u0627\u0644\u062d\u0641\u0638 \u0641\u064a \u0627\u0644\u062e\u0632\u0627\u0646\u0629", toast_removed: "\u062a\u0645 \u0627\u0644\u062d\u0630\u0641", toast_hist: "\u062d\u064f\u0641\u0638\u062a \u0641\u064a \u0633\u062c\u0644 \u0661\u0664 \u064a\u0648\u0645\u064b\u0627", toast_fb_up: "\u062a\u0645 \u2014 \u0627\u0644\u0645\u0632\u064a\u062f \u0645\u0646 \u0627\u0644\u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0627\u0644\u0645\u0634\u0627\u0628\u0647\u0629", toast_fb_down: "\u062a\u0645 \u2014 \u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0623\u0642\u0644 \u0645\u0646 \u0647\u0630\u0627 \u0627\u0644\u0646\u0648\u0639", fb_why: "\u0645\u0627 \u0627\u0644\u0630\u064a \u064a\u062c\u0639\u0644\u0647\u0627 \u0623\u0641\u0636\u0644\u061f", fb_ph: "\u0645\u062b\u0627\u0644: \u0631\u0633\u0645\u064a\u0629 \u0632\u064a\u0627\u062f\u0629\u060c \u0627\u0644\u0623\u0644\u0648\u0627\u0646 \u0644\u0627 \u062a\u062a\u0646\u0627\u0633\u0642\u060c \u0644\u0627 \u062a\u062c\u0645\u0639\u064a \u0647\u0627\u062a\u064a\u0646\u2026", fb_send: "\u0625\u0631\u0633\u0627\u0644", fb_thanks: "\u0634\u0643\u0631\u064b\u0627 \u2014 \u0633\u0623\u062a\u0630\u0643\u0631 \u0630\u0644\u0643", oops: "\u062d\u062f\u062b \u062e\u0637\u0623 \u2014 \u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627", toast_no_alt: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0642\u0637\u0639\u0629 \u0623\u062e\u0631\u0649 \u0645\u0646\u0627\u0633\u0628\u0629 \u0647\u0646\u0627", shop_h: "\u0642\u0637\u0639\u0629 \u0627\u0644\u0634\u0647\u0631", shop_loading: "\u062c\u0627\u0631\u064d \u0642\u0631\u0627\u0621\u0629 \u062e\u0632\u0627\u0646\u062a\u0643\u2026", shop_fb: "\u062e\u0632\u0627\u0646\u062a\u0643 \u062a\u062d\u062a\u0627\u062c {c} \u0625\u0636\u0627\u0641\u064a\u0629 \u2014 \u0642\u0637\u0639\u0629 \u0645\u062a\u0639\u062f\u062f\u0629 \u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0647\u0646\u0627 \u0633\u062a\u0641\u062a\u062d \u0644\u0643 \u0625\u0637\u0644\u0627\u0644\u0627\u062a \u0643\u062b\u064a\u0631\u0629.", tip_photo: "\u0646\u0635\u064a\u062d\u0629: \u0627\u0644\u0635\u0648\u0631 \u0627\u0644\u0648\u0627\u0636\u062d\u0629 \u062a\u0633\u0627\u0639\u062f \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0639\u0644\u0649 \u062a\u0646\u0633\u064a\u0642\u0643 \u0628\u0634\u0643\u0644 \u0623\u0641\u0636\u0644 \u2014 \u0642\u0637\u0639\u0629 \u0648\u0627\u062d\u062f\u0629\u060c \u0645\u0641\u0631\u0648\u062f\u0629\u060c \u0628\u0625\u0636\u0627\u0621\u0629 \u062c\u064a\u062f\u0629.",
   toast_new_closet: "\u0627\u0644\u062e\u0632\u0627\u0646\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629 {id} \u062c\u0627\u0647\u0632\u0629", toast_opened: "\u0641\u064f\u062a\u062d\u062a \u0627\u0644\u062e\u0632\u0627\u0646\u0629 {id}",
   toast_savefail: "\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638 \u2014 \u062a\u062d\u0642\u0642\u064a \u0648\u062d\u0627\u0648\u0644\u064a \u0645\u062c\u062f\u062f\u064b\u0627", toast_photo: "\u062a\u0639\u0630\u0651\u0631\u062a \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0635\u0648\u0631\u0629",
   ai_looking: "\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u064a\u0641\u062d\u0635\u2026", ai_tagged: "\u062a\u0645 \u0627\u0644\u062a\u0635\u0646\u064a\u0641 \u2713 \u0631\u0627\u062c\u0639\u064a \u0628\u0627\u0644\u0623\u0633\u0641\u0644", ai_unavail: "\u063a\u064a\u0631 \u0645\u062a\u0627\u062d \u2014 \u0635\u0646\u0651\u0641\u064a \u064a\u062f\u0648\u064a\u064b\u0627",
@@ -817,6 +824,7 @@ function applyLanguage(l){
     itx.textContent = IS_IOS ? t("install_ios") : t("install_android");
   }
   markLangChips();
+  updateShopSuggestion();
 }
 function chooseLang(l){
   applyLanguage(l);
@@ -941,6 +949,7 @@ var pendingImg = null;
 var pendingPatterned = false;
 var pendingColorRole = "";
 var pendingFit = "";
+var pendingFabric = "";
 var selOccasion = "friends";
 var selWeather = "summer";
 var selModest = false;
@@ -1015,7 +1024,7 @@ function rowToItem(r){
     category: r.category || "top", color: r.color || "neutral",
     formalities: (r.formalities && r.formalities.length) ? r.formalities : ["casual"],
     warmth: (r.warmth === null || r.warmth === undefined) ? 2 : r.warmth,
-    modest: !!r.modest, patterned: !!r.patterned, colorRole: r.color_role || "", fit: r.fit || "", img: r.image_url || "", createdAt: r.created_at
+    modest: !!r.modest, patterned: !!r.patterned, colorRole: r.color_role || "", fit: r.fit || "", fabric: r.fabric || "", img: r.image_url || "", createdAt: r.created_at
   };
 }
 async function loadLangFromCloud(){
@@ -1053,6 +1062,7 @@ async function loadCloset(){
   renderHistory();
   renderClosetList();
   document.getElementById("outfit-results").innerHTML = "";
+  updateShopSuggestion();
 }
 
 // kept for compatibility with the rest of the app
@@ -1151,7 +1161,7 @@ async function analyzeWithAI(dataUrl){
           role: "user",
           content: [
             { type: "image", source: { type: "base64", media_type: "image/jpeg", data: base64 } },
-            { type: "text", text: "You are tagging one clothing item for a wardrobe app. Look at the photo and respond with ONLY a JSON object, no markdown, no backticks, no other text. Schema: {\"name\": short catchy item name max 4 words, \"desc\": a 1-2 sentence Pinterest/Instagram-style description of this piece, warm and aesthetic, mentioning fabric feel, vibe, and what it pairs with, \"category\": one of top|bottom|dress|outerwear|shoes|accessory|hijab (use hijab for a headscarf/veil), \"color\": main color one or two words, \"formalities\": array with EVERY level this piece can be worn at, from casual|smart|formal|sporty (e.g. dark jeans could be [\"casual\",\"smart\"]), \"warmth\": 0 if suitable for all seasons (e.g. a basic tee, plain jeans, sneakers) else 1 for light/summer fabric 2 for medium 3 for warm/winter, \"patterned\": true if the item has a bold print/pattern (floral, stripes, checks, animal print, graphic) or false if it is solid/plain, \"color_role\": \"neutral\" if the main color is black/white/cream/beige/grey/navy/denim/brown else \"accent\", \"fit\": one of fitted|regular|relaxed based on the cut, \"modest\": true if high coverage (long sleeves, high neckline, loose fit, or covers knees and shoulders) else false}. If the photo is not clothing, still guess the closest match." + (LANG === "ar" ? " Write the name and desc values in Arabic." : "") }
+            { type: "text", text: "You are tagging one clothing item for a wardrobe app. Look at the photo and respond with ONLY a JSON object, no markdown, no backticks, no other text. Schema: {\"name\": short catchy item name max 4 words, \"desc\": a 1-2 sentence Pinterest/Instagram-style description of this piece, warm and aesthetic, mentioning fabric feel, vibe, and what it pairs with, \"category\": one of top|bottom|dress|outerwear|shoes|accessory|hijab (use hijab for a headscarf/veil), \"color\": main color one or two words, \"formalities\": array with EVERY level this piece can be worn at, from casual|smart|formal|sporty (e.g. dark jeans could be [\"casual\",\"smart\"]), \"warmth\": 0 if suitable for all seasons (e.g. a basic tee, plain jeans, sneakers) else 1 for light/summer fabric 2 for medium 3 for warm/winter, \"patterned\": true if the item has a bold print/pattern (floral, stripes, checks, animal print, graphic) or false if it is solid/plain, \"color_role\": \"neutral\" if the main color is black/white/cream/beige/grey/navy/denim/brown else \"accent\", \"fit\": one of fitted|regular|relaxed based on the cut, \"fabric\": your best guess of the main material from the look/texture (one of cotton|linen|denim|wool|cashmere|silk|leather|suede|corduroy|flannel|knit|chino|tweed|velvet|satin|chambray|seersucker|rayon|viscose|jersey|fleece or empty string if unsure), \"modest\": true if high coverage (long sleeves, high neckline, loose fit, or covers knees and shoulders) else false}. If the photo is not clothing, still guess the closest match." + (LANG === "ar" ? " Write the name and desc values in Arabic." : "") }
           ]
         }]
       })
@@ -1182,6 +1192,7 @@ async function analyzeWithAI(dataUrl){
       setToggleVal("f-pattern", pendingPatterned);
       pendingColorRole = (parsed.color_role === "neutral" || parsed.color_role === "accent") ? parsed.color_role : "";
       pendingFit = (parsed.fit === "fitted" || parsed.fit === "relaxed" || parsed.fit === "regular") ? parsed.fit : "";
+      if(parsed.fabric && typeof parsed.fabric === "string" && parsed.fabric.length < 20){ pendingFabric = parsed.fabric.toLowerCase().trim(); var ff = document.getElementById("f-fabric"); if(ff) ff.value = pendingFabric; }
       setToggleVal("f-modest", !!parsed.modest);
       badgeText.textContent = t("ai_tagged");
       badge.querySelector(".pulse").style.animation = "none";
@@ -1320,6 +1331,8 @@ function openTagSheet(existingItem, newImgDataUrl){
   setToggleVal("f-pattern", existingItem ? !!existingItem.patterned : false);
   pendingColorRole = existingItem ? (existingItem.colorRole || "") : "";
   pendingFit = existingItem ? (existingItem.fit || "") : "";
+  pendingFabric = existingItem ? (existingItem.fabric || "") : "";
+  var ffld = document.getElementById("f-fabric"); if(ffld) ffld.value = pendingFabric;
   document.getElementById("btn-delete-item").style.display = existingItem ? "block" : "none";
   document.getElementById("ai-badge").style.display = "none";
   document.getElementById("tag-overlay").classList.add("show");
@@ -1346,23 +1359,24 @@ document.getElementById("btn-save-item").addEventListener("click", async functio
   var warmth = parseInt(getChipVal("f-warmth") || "2", 10);
   var modest = getToggleVal("f-modest");
   var patterned = getToggleVal("f-pattern");
+  var fabric = document.getElementById("f-fabric") ? document.getElementById("f-fabric").value.trim().toLowerCase() : "";
 
   setSavePill("", t("saving"));
   try{
     if(currentTagItemId){
       var patch = { name: name, description: desc, color: color, category: category,
-                    formalities: formalities, warmth: warmth, modest: modest, patterned: patterned };
+                    formalities: formalities, warmth: warmth, modest: modest, patterned: patterned, fabric: fabric || null };
       var upd = await sb.from("items").update(patch).eq("id", currentTagItemId).select().single();
       if(upd.error) throw upd.error;
       for(var i=0;i<items.length;i++){
-        if(items[i].id === currentTagItemId){ Object.assign(items[i], rowToItem(upd.data)); }
+        if(items[i].id === currentTagItemId){ Object.assign(items[i], rowToItem(upd.data)); items[i].fabric = fabric; }
       }
     } else {
       // create the row first to get an id, then upload the photo, then save its URL
       var ins = await sb.from("items").insert({
         name: name || (color + " " + category), description: desc, color: color,
         category: category, formalities: formalities, warmth: warmth, modest: modest, patterned: patterned,
-        color_role: pendingColorRole || null, fit: pendingFit || null
+        color_role: pendingColorRole || null, fit: pendingFit || null, fabric: fabric || null
       }).select().single();
       if(ins.error) throw ins.error;
       var newItem = rowToItem(ins.data);
@@ -1752,6 +1766,10 @@ var FABRIC_PAIR = {
   velvet:["silk","wool","satin"], satin:["silk","velvet"]
 };
 function fabricOf(it){
+  if(it.fabric){
+    var fx = it.fabric.toLowerCase();
+    for(var key in FABRIC_WORDS){ var alx = FABRIC_WORDS[key]; for(var qi=0;qi<alx.length;qi++){ if(fx.indexOf(alx[qi]) >= 0) return key; } }
+  }
   var hay = ((it.name||"") + " " + (it.desc||"")).toLowerCase();
   for(var f in FABRIC_WORDS){ var al = FABRIC_WORDS[f]; for(var i=0;i<al.length;i++){ if(hay.indexOf(al[i]) >= 0) return f; } }
   return null;
@@ -2044,6 +2062,48 @@ async function aiCaptions(pickedCombos){
   }catch(e){ return null; }
 }
 
+function monthKey(){ var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1); }
+function fallbackShopSuggestion(){
+  var cats = ["shoes","bottom","top","outerwear","dress","accessory"];
+  var counts = {};
+  cats.forEach(function(c){ counts[c] = 0; });
+  items.forEach(function(it){ if(counts[it.category] !== undefined) counts[it.category]++; });
+  var pick = "shoes", best = 1e9;
+  cats.forEach(function(c){ if(counts[c] < best){ best = counts[c]; pick = c; } });
+  return fmt(t("shop_fb"), {c: lbl("cat", pick)});
+}
+async function aiShopSuggestion(){
+  if(!apiKey) return null;
+  try{
+    var inv = items.slice(0, 60).map(function(it){ return (it.color||"") + " " + (it.name||"") + " (" + it.category + ")"; }).join("; ");
+    var prompt = "You are a personal wardrobe consultant. Here is the user\u2019s entire closet: " + inv + ". Identify the single most valuable gap and recommend exactly ONE specific piece to buy this month (garment type + suggested color/fabric), briefly explaining why it unlocks the most new outfits with what she already owns. Respond with ONLY the recommendation text, 1-2 sentences, no lists." + (LANG === "ar" ? " Respond in Arabic." : "");
+    var response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: aiHeaders(),
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 300, messages: [{ role: "user", content: prompt }] })
+    });
+    var data = await response.json();
+    var text = "";
+    if(data && data.content){ for(var i=0;i<data.content.length;i++){ if(data.content[i].type === "text") text += data.content[i].text; } }
+    text = text.replace(/```/g, "").trim();
+    return (text && text.length < 500) ? text : null;
+  }catch(e){ return null; }
+}
+async function updateShopSuggestion(){
+  var cardEl = document.getElementById("shop-card");
+  var txtEl = document.getElementById("shop-text");
+  if(!cardEl || !txtEl) return;
+  if(!items.length){ cardEl.style.display = "none"; return; }
+  var sk = "rack_shop_" + ((typeof currentUser !== "undefined" && currentUser && currentUser.id) ? currentUser.id.slice(0, 8) + "_" : "") + monthKey() + "_" + LANG;
+  var cached = lsGet(sk);
+  if(cached){ txtEl.textContent = cached; cardEl.style.display = "block"; return; }
+  txtEl.textContent = t("shop_loading");
+  cardEl.style.display = "block";
+  var text = await aiShopSuggestion();
+  if(!text) text = fallbackShopSuggestion();
+  txtEl.textContent = text;
+  lsSet(sk, text);
+}
 function buildPhotosHtml(combo){
   return combo.entries.map(function(e, pi){
     var rm = (e.item.category === "outerwear" && (selWeather === "summer" || selWeather === "spring"))
