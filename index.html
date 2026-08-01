@@ -444,13 +444,10 @@ nav{
 .shop-h{font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--mauve);font-weight:600;margin-bottom:6px;}
 .shop-text{font-family:"Fraunces",serif;font-style:italic;font-size:15px;line-height:1.5;}
 html[lang="ar"] .shop-text{font-family:"Amiri",serif;font-style:normal;}
-.mannequin-wrap{display:flex;justify-content:center;margin-bottom:10px;}
-.mannequin-wrap svg{overflow:visible;}
-.mq-base{stroke:var(--line);stroke-width:2.4;}
-#mq-top,#mq-dress,#mq-bottom,#mq-outer,#mq-hijab,#mq-acc,#mq-shoes{
-  stroke:rgba(0,0,0,0.08);stroke-width:1.2;transition:fill .22s ease,opacity .22s ease;
-}
-#mq-top,#mq-dress,#mq-bottom,#mq-outer,#mq-hijab,#mq-acc,#mq-shoes{opacity:0;}
+.mannequin-wrap{display:flex;justify-content:center;margin-bottom:12px;}
+.mannequin-wrap svg{overflow:visible;filter:drop-shadow(0 6px 10px rgba(43,34,38,0.10));}
+.mq-zone{opacity:0;transition:opacity .25s ease;}
+.mq-zone > path,.mq-zone > rect,.mq-zone > ellipse{transition:fill .25s ease;}
 .build-strip{display:flex;gap:6px;overflow-x:auto;min-height:74px;padding:6px;background:var(--canvas);border-radius:12px;margin-bottom:6px;align-items:center;}
 .build-strip img{width:56px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0;}
 .build-empty{font-size:12.5px;color:#8a7076;padding:0 8px;}
@@ -590,27 +587,85 @@ html[lang="ar"] .shop-text{font-family:"Amiri",serif;font-style:normal;}
     <div class="sheet" style="max-height:88vh;">
       <h3 data-i18n="build_h">Put a look together</h3>
       <div class="mannequin-wrap">
-        <svg id="mannequin-svg" viewBox="0 0 160 300" width="150" height="280">
-          <path class="mq-outer" id="mq-outer" fill="none" d="M40,52 Q26,58 22,90 L30,138 L42,135 L38,90 Q42,66 52,54 Z M120,52 Q134,58 138,90 L130,138 L118,135 L122,90 Q118,66 108,54 Z"/>
-          <path class="mq-dress" id="mq-dress" fill="none" d="M58,48 Q80,42 102,48 L112,150 Q80,168 48,150 Z"/>
-          <path class="mq-top" id="mq-top" fill="none" d="M58,48 Q80,42 102,48 L108,138 Q80,148 52,138 Z"/>
-          <g id="mq-bottom" class="mq-bottom" fill="none">
-            <path d="M62,146 L58,246 L70,246 L74,148 Z"/>
-            <path d="M98,146 L102,246 L90,246 L86,148 Z"/>
+        <svg id="mannequin-svg" viewBox="0 0 200 380" width="176" height="334">
+          <defs>
+            <linearGradient id="mqShade" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#fff" stop-opacity="0.30"/>
+              <stop offset="34%" stop-color="#fff" stop-opacity="0.04"/>
+              <stop offset="62%" stop-color="#000" stop-opacity="0.06"/>
+              <stop offset="100%" stop-color="#000" stop-opacity="0.34"/>
+            </linearGradient>
+            <linearGradient id="mqShadeSoft" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#fff" stop-opacity="0.24"/>
+              <stop offset="45%" stop-color="#fff" stop-opacity="0.02"/>
+              <stop offset="100%" stop-color="#000" stop-opacity="0.26"/>
+            </linearGradient>
+            <linearGradient id="mqBody" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#F4EAE4"/>
+              <stop offset="40%" stop-color="#EADCD4"/>
+              <stop offset="100%" stop-color="#C9B3A8"/>
+            </linearGradient>
+            <radialGradient id="mqFloor" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#000" stop-opacity="0.20"/>
+              <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <ellipse cx="100" cy="350" rx="54" ry="10" fill="url(#mqFloor)"/>
+
+          <g id="mq-body">
+            <ellipse cx="100" cy="42" rx="19" ry="23" fill="url(#mqBody)"/>
+            <path d="M91,60 L109,60 L108,78 L92,78 Z" fill="url(#mqBody)"/>
+            <path d="M100,74 C118,74 130,82 134,100 C138,118 132,134 126,150 C124,160 126,172 130,186 C134,200 132,212 128,220 L72,220 C68,212 66,200 70,186 C74,172 76,160 74,150 C68,134 62,118 66,100 C70,82 82,74 100,74 Z" fill="url(#mqBody)"/>
+            <path d="M132,86 C142,96 146,120 144,150 C143,166 140,178 138,186 L130,184 C132,174 134,160 134,146 C134,120 130,100 126,90 Z" fill="url(#mqBody)"/>
+            <path d="M68,86 C58,96 54,120 56,150 C57,166 60,178 62,186 L70,184 C68,174 66,160 66,146 C66,120 70,100 74,90 Z" fill="url(#mqBody)"/>
+            <path d="M74,220 L96,220 C96,250 94,292 92,336 L76,336 C76,292 74,250 74,220 Z" fill="url(#mqBody)"/>
+            <path d="M104,220 L126,220 C126,250 124,292 124,336 L108,336 C108,292 104,250 104,220 Z" fill="url(#mqBody)"/>
           </g>
-          <path class="mq-base" fill="none" d="M55,50 Q80,44 105,50 L112,140 Q80,150 48,140 Z"/>
-          <path class="mq-base" fill="none" d="M55,55 Q40,80 44,120 L54,120 Q52,85 63,58 Z"/>
-          <path class="mq-base" fill="none" d="M105,55 Q120,80 116,120 L106,120 Q108,85 97,58 Z"/>
-          <path class="mq-base" fill="none" d="M62,148 L58,250 L70,250 L74,150 Z"/>
-          <path class="mq-base" fill="none" d="M98,148 L102,250 L90,250 L86,150 Z"/>
-          <circle class="mq-base" fill="none" cx="80" cy="24" r="16"/>
-          <rect class="mq-base" fill="none" x="74" y="38" width="12" height="10" rx="3"/>
-          <path class="mq-hijab" id="mq-hijab" fill="none" d="M58,18 Q80,4 102,18 Q112,34 106,54 L96,50 Q100,32 90,20 Q80,12 70,20 Q60,32 64,50 L54,54 Q48,34 58,18 Z"/>
-          <g id="mq-shoes" class="mq-shoes" fill="none">
-            <ellipse cx="62" cy="255" rx="10" ry="6"/>
-            <ellipse cx="98" cy="255" rx="10" ry="6"/>
+
+          <g id="mq-bottom" class="mq-zone">
+            <path d="M73,176 L127,176 C128,196 128,208 127,222 C126,262 124,300 123,338 L107,338 C106,300 104,266 103,232 L97,232 C96,266 94,300 93,338 L77,338 C76,300 74,262 73,222 C72,208 72,196 73,176 Z"/>
+            <path d="M73,176 L127,176 C128,196 128,208 127,222 C126,262 124,300 123,338 L107,338 C106,300 104,266 103,232 L97,232 C96,266 94,300 93,338 L77,338 C76,300 74,262 73,222 C72,208 72,196 73,176 Z" fill="url(#mqShade)"/>
           </g>
-          <circle class="mq-acc" id="mq-acc" fill="none" cx="122" cy="150" r="7"/>
+
+          <g id="mq-top" class="mq-zone">
+            <path d="M100,72 C118,72 131,80 135,100 C139,120 133,136 127,152 C126,162 127,170 128,180 L72,180 C73,170 74,162 73,152 C67,136 61,120 65,100 C69,80 82,72 100,72 Z"/>
+            <path d="M100,72 C118,72 131,80 135,100 C139,120 133,136 127,152 C126,162 127,170 128,180 L72,180 C73,170 74,162 73,152 C67,136 61,120 65,100 C69,80 82,72 100,72 Z" fill="url(#mqShade)"/>
+            <path d="M100,74 C104,96 104,130 101,180" fill="none" stroke="#000" stroke-opacity="0.07" stroke-width="2"/>
+          </g>
+
+          <g id="mq-dress" class="mq-zone">
+            <path d="M100,72 C118,72 131,80 135,100 C139,120 133,136 127,152 C133,182 141,222 146,258 C116,272 84,272 54,258 C59,222 67,182 73,152 C67,136 61,120 65,100 C69,80 82,72 100,72 Z"/>
+            <path d="M100,72 C118,72 131,80 135,100 C139,120 133,136 127,152 C133,182 141,222 146,258 C116,272 84,272 54,258 C59,222 67,182 73,152 C67,136 61,120 65,100 C69,80 82,72 100,72 Z" fill="url(#mqShade)"/>
+            <path d="M86,158 C82,196 76,228 68,262 M114,158 C118,196 124,228 132,262" fill="none" stroke="#000" stroke-opacity="0.07" stroke-width="2"/>
+          </g>
+
+          <g id="mq-outer" class="mq-zone">
+            <path d="M132,84 C145,93 151,122 149,160 C148,192 145,216 142,234 L120,230 C124,206 127,181 128,152 C129,120 128,98 124,86 Z"/>
+            <path d="M68,84 C55,93 49,122 51,160 C52,192 55,216 58,234 L80,230 C76,206 73,181 72,152 C71,120 72,98 76,86 Z"/>
+            <path d="M132,84 C145,93 151,122 149,160 C148,192 145,216 142,234 L120,230 C124,206 127,181 128,152 C129,120 128,98 124,86 Z" fill="url(#mqShadeSoft)"/>
+            <path d="M68,84 C55,93 49,122 51,160 C52,192 55,216 58,234 L80,230 C76,206 73,181 72,152 C71,120 72,98 76,86 Z" fill="url(#mqShadeSoft)"/>
+          </g>
+
+          <g id="mq-hijab" class="mq-zone">
+            <path d="M100,14 C77,14 60,31 60,55 C60,73 68,88 76,100 C80,108 82,116 82,124 L118,124 C118,116 120,108 124,100 C132,88 140,73 140,55 C140,31 123,14 100,14 Z"/>
+            <path d="M100,14 C77,14 60,31 60,55 C60,73 68,88 76,100 C80,108 82,116 82,124 L118,124 C118,116 120,108 124,100 C132,88 140,73 140,55 C140,31 123,14 100,14 Z" fill="url(#mqShade)"/>
+            <ellipse cx="100" cy="46" rx="15" ry="19" fill="#EFE2DA"/>
+            <path d="M100,32 C112,42 114,66 108,86" fill="none" stroke="#000" stroke-opacity="0.06" stroke-width="2"/>
+          </g>
+
+          <g id="mq-shoes" class="mq-zone">
+            <path d="M76,336 L92,336 C93,344 92,350 84,350 C77,350 75,344 76,336 Z"/>
+            <path d="M108,336 L124,336 C125,344 124,350 116,350 C109,350 107,344 108,336 Z"/>
+            <path d="M76,336 L92,336 C93,344 92,350 84,350 C77,350 75,344 76,336 Z" fill="url(#mqShadeSoft)"/>
+            <path d="M108,336 L124,336 C125,344 124,350 116,350 C109,350 107,344 108,336 Z" fill="url(#mqShadeSoft)"/>
+          </g>
+
+          <g id="mq-acc" class="mq-zone">
+            <rect x="140" y="176" width="26" height="22" rx="5"/>
+            <rect x="140" y="176" width="26" height="22" rx="5" fill="url(#mqShadeSoft)"/>
+            <path d="M146,176 C146,168 160,168 160,176" fill="none" stroke="#000" stroke-opacity="0.22" stroke-width="2.4"/>
+          </g>
         </svg>
       </div>
       <div class="build-strip" id="build-strip"></div>
