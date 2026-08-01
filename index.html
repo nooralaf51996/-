@@ -444,6 +444,13 @@ nav{
 .shop-h{font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--mauve);font-weight:600;margin-bottom:6px;}
 .shop-text{font-family:"Fraunces",serif;font-style:italic;font-size:15px;line-height:1.5;}
 html[lang="ar"] .shop-text{font-family:"Amiri",serif;font-style:normal;}
+.mannequin-wrap{display:flex;justify-content:center;margin-bottom:10px;}
+.mannequin-wrap svg{overflow:visible;}
+.mq-base{stroke:var(--line);stroke-width:2.4;}
+#mq-top,#mq-dress,#mq-bottom,#mq-outer,#mq-hijab,#mq-acc,#mq-shoes{
+  stroke:rgba(0,0,0,0.08);stroke-width:1.2;transition:fill .22s ease,opacity .22s ease;
+}
+#mq-top,#mq-dress,#mq-bottom,#mq-outer,#mq-hijab,#mq-acc,#mq-shoes{opacity:0;}
 .build-strip{display:flex;gap:6px;overflow-x:auto;min-height:74px;padding:6px;background:var(--canvas);border-radius:12px;margin-bottom:6px;align-items:center;}
 .build-strip img{width:56px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0;}
 .build-empty{font-size:12.5px;color:#8a7076;padding:0 8px;}
@@ -582,6 +589,30 @@ html[lang="ar"] .shop-text{font-family:"Amiri",serif;font-style:normal;}
   <div class="overlay" id="build-overlay">
     <div class="sheet" style="max-height:88vh;">
       <h3 data-i18n="build_h">Put a look together</h3>
+      <div class="mannequin-wrap">
+        <svg id="mannequin-svg" viewBox="0 0 160 300" width="150" height="280">
+          <path class="mq-outer" id="mq-outer" fill="none" d="M40,52 Q26,58 22,90 L30,138 L42,135 L38,90 Q42,66 52,54 Z M120,52 Q134,58 138,90 L130,138 L118,135 L122,90 Q118,66 108,54 Z"/>
+          <path class="mq-dress" id="mq-dress" fill="none" d="M58,48 Q80,42 102,48 L112,150 Q80,168 48,150 Z"/>
+          <path class="mq-top" id="mq-top" fill="none" d="M58,48 Q80,42 102,48 L108,138 Q80,148 52,138 Z"/>
+          <g id="mq-bottom" class="mq-bottom" fill="none">
+            <path d="M62,146 L58,246 L70,246 L74,148 Z"/>
+            <path d="M98,146 L102,246 L90,246 L86,148 Z"/>
+          </g>
+          <path class="mq-base" fill="none" d="M55,50 Q80,44 105,50 L112,140 Q80,150 48,140 Z"/>
+          <path class="mq-base" fill="none" d="M55,55 Q40,80 44,120 L54,120 Q52,85 63,58 Z"/>
+          <path class="mq-base" fill="none" d="M105,55 Q120,80 116,120 L106,120 Q108,85 97,58 Z"/>
+          <path class="mq-base" fill="none" d="M62,148 L58,250 L70,250 L74,150 Z"/>
+          <path class="mq-base" fill="none" d="M98,148 L102,250 L90,250 L86,150 Z"/>
+          <circle class="mq-base" fill="none" cx="80" cy="24" r="16"/>
+          <rect class="mq-base" fill="none" x="74" y="38" width="12" height="10" rx="3"/>
+          <path class="mq-hijab" id="mq-hijab" fill="none" d="M58,18 Q80,4 102,18 Q112,34 106,54 L96,50 Q100,32 90,20 Q80,12 70,20 Q60,32 64,50 L54,54 Q48,34 58,18 Z"/>
+          <g id="mq-shoes" class="mq-shoes" fill="none">
+            <ellipse cx="62" cy="255" rx="10" ry="6"/>
+            <ellipse cx="98" cy="255" rx="10" ry="6"/>
+          </g>
+          <circle class="mq-acc" id="mq-acc" fill="none" cx="122" cy="150" r="7"/>
+        </svg>
+      </div>
       <div class="build-strip" id="build-strip"></div>
       <div class="hint" id="build-count" style="text-align:center;margin-bottom:4px;"></div>
       <div class="build-scroll"><div id="build-grid"></div></div>
@@ -2288,12 +2319,47 @@ function builderEntries(){
     return it ? { item: it, lvl: 0 } : null;
   }).filter(Boolean);
 }
+var MANNEQUIN_ZONES = ["mq-top","mq-dress","mq-bottom","mq-outer","mq-hijab","mq-acc","mq-shoes"];
+var COLOR_HEX = {};
+(function(){ SWATCHES.forEach(function(sw){ COLOR_HEX[sw[0]] = sw[1]; }); })();
+function hexForItem(it){
+  var fam = colorFamily(it);
+  return (fam && COLOR_HEX[fam]) ? COLOR_HEX[fam] : "#EDE4DD";
+}
+function setMannequinZone(id, hex){
+  var el = document.getElementById(id);
+  if(!el) return;
+  if(hex){ el.setAttribute("fill", hex); el.style.opacity = "1"; }
+  else { el.setAttribute("fill", "none"); el.style.opacity = "0"; }
+}
+function renderMannequin(entries){
+  if(!document.getElementById("mannequin-svg")) return;
+  var byCat = {};
+  entries.forEach(function(e){ byCat[e.item.category] = e.item; });
+  var hasDress = !!byCat.dress;
+  setMannequinZone("mq-dress", hasDress ? hexForItem(byCat.dress) : null);
+  setMannequinZone("mq-top", (!hasDress && byCat.top) ? hexForItem(byCat.top) : null);
+  var botEl = document.getElementById("mq-bottom");
+  if(botEl){
+    if(!hasDress && byCat.bottom){ botEl.setAttribute("fill", hexForItem(byCat.bottom)); botEl.style.opacity = "1"; }
+    else { botEl.setAttribute("fill", "none"); botEl.style.opacity = "0"; }
+  }
+  setMannequinZone("mq-outer", byCat.outerwear ? hexForItem(byCat.outerwear) : null);
+  setMannequinZone("mq-hijab", byCat.hijab ? hexForItem(byCat.hijab) : null);
+  setMannequinZone("mq-acc", byCat.accessory ? hexForItem(byCat.accessory) : null);
+  var shoeEl = document.getElementById("mq-shoes");
+  if(shoeEl){
+    if(byCat.shoes){ shoeEl.setAttribute("fill", hexForItem(byCat.shoes)); shoeEl.style.opacity = "1"; }
+    else { shoeEl.setAttribute("fill", "none"); shoeEl.style.opacity = "0"; }
+  }
+}
 function renderBuilder(){
   var strip = document.getElementById("build-strip");
   var grid = document.getElementById("build-grid");
   var cnt = document.getElementById("build-count");
   if(!grid) return;
   var ents = builderEntries();
+  renderMannequin(ents);
   strip.innerHTML = ents.length
     ? ents.map(function(e){ return '<img src="' + (e.item.img || "") + '">'; }).join("")
     : '<div class="build-empty">' + t("build_empty") + '</div>';
